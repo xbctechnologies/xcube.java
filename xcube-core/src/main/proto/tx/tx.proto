@@ -1,0 +1,44 @@
+syntax = "proto3";
+package xtypes;
+
+import "tx/commonTx.proto";
+import "tx/fileTx.proto";
+import "tx/bondingTx.proto";
+import "tx/unbondingTx.proto";
+import "tx/delegatingTx.proto";
+import "tx/undelegatingTx.proto";
+import "tx/grProposalTx.proto";
+import "tx/grVoteTx.proto";
+import "tx/recoverTx.proto";
+import "tx/makeXChainTx.proto";
+
+option go_package = "github.com/xblocksys/go-xblockchain/xcommon/xtypes/proto";
+option java_package = "com.xbctechnologies.core.apis.dto.xtypes.proto";
+option java_outer_classname = "TxProto";
+
+message Tx {
+    string targetChainId = 1;
+    string receiver = 2;
+
+    string fee = 3;
+    string amount = 4;
+    TxPayload txPayload = 5;
+
+    string time = 6;
+}
+
+message TxPayload {
+    int32 payloadType = 1;
+    oneof payloadBody {
+        CommonTx common = 2;
+        FileTx file = 3;
+        BondingTx bonding = 4;
+        UnbondingTx unbonding = 5;
+        DelegatingTx delegating = 6;
+        UndelegatingTx undelegating = 7;
+        GrProposalTx grProposal = 8;
+        GrVoteTx grVote = 9;
+        RecoverTx recoverTx = 10;
+        MakeXChainTx makeXChain = 11;
+    }
+}

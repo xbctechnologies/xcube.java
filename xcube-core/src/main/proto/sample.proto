@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package xtypes;
+
+option go_package = "xcommon/xtypes";
+
+option java_package = "kr.co.xblocksystems.core.apis.dto.xtypes";
+option java_outer_classname = "AccountProto";
+
+message Account {
+    string address = 1;
+    uint64 txNo = 2;
+    string balance = 3;
+    string bondingBalance = 4;
+    //Map type
+    map<string, Bond> bondingMap = 5;
+    //List type
+    repeated UnBond unBondingList = 6;
+}
+
+message Bond {
+    string BondingBalance = 1;
+}
+
+message UnBond {
+    string ValidatorAccountAddr = 1;
+    string UnBondingBalance = 2;
+    string RewardBalance = 3;
+    int64 BreakBlockNo = 4;
+}

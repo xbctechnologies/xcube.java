@@ -1,0 +1,15 @@
+syntax = "proto3";
+package xtypes;
+
+option go_package = "github.com/xblocksys/go-xblockchain/xcommon/xtypes/proto";
+option java_package = "com.xbctechnologies.core.apis.dto.xtypes.proto";
+option java_outer_classname = "BondingTxProto";
+
+message BondingTx {
+    string companyName = 1;
+    string companyDesc = 2;
+    string companyUrl = 3;
+    string companyLogoUrl = 4;
+    string companyLat = 5;
+    string companyLon = 6;
+}

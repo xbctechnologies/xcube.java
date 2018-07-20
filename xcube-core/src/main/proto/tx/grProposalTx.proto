@@ -1,0 +1,35 @@
+syntax = "proto3";
+package xtypes;
+
+option go_package = "github.com/xblocksys/go-xblockchain/xcommon/xtypes/proto";
+option java_package = "com.xbctechnologies.core.apis.dto.xtypes.proto";
+option java_outer_classname = "GrProposalTxProto";
+
+message GrProposalTx {
+    string rewardXtoPerCoin = 1;
+
+    string minCommonTxFee = 2;
+    string minBondingTxFee = 3;
+    string minGRProposalTxFee = 4;
+    string minGRVoteTxFee = 5;
+    string minXTxFee = 6;
+
+    int64 maxBlockNumsForVoting = 7;
+    int64 minBlockNumsToGRProposal = 8;
+    int64 MinBlockNumsUtilReflection = 9;
+    int64 MaxBlockNumsUtilReflection = 10;
+
+    int64 blockNumsFreezingValidator = 11;
+    int64 blockNumsUtilUnbonded = 12;
+    int64 maxDelegatableValidatorNums = 13;
+    int64 validatorNums = 14;
+
+    string firstCompatibleVersion = 15;
+
+    CurrentReflection currentReflection = 16;
+}
+
+message CurrentReflection {
+    int64 blockNumsForVoting = 1;
+    int64 blockNumsUtilReflection = 2;
+}

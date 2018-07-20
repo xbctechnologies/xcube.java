@@ -1,0 +1,15 @@
+jar {
+    baseName = 'xcrypto'
+}
+
+dependencies {
+    def spongycastleVersion = '1.54.0.0'
+
+    /* spongycastle Crypto */
+    compile "com.madgag.spongycastle:core:$spongycastleVersion"
+    compile "com.madgag.spongycastle:prov:$spongycastleVersion"
+    compile "com.madgag.spongycastle:pkix:$spongycastleVersion"
+    compile "com.madgag.spongycastle:pg:$spongycastleVersion"
+
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
+}

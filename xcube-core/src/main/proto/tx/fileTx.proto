@@ -1,0 +1,14 @@
+syntax = "proto3";
+package xtypes;
+
+option go_package = "github.com/xblocksys/go-xblockchain/xcommon/xtypes/proto";
+option java_package = "com.xbctechnologies.core.apis.dto.xtypes.proto";
+option java_outer_classname = "FileTxProto";
+
+message FileTx {
+    int32 op = 1;
+    bytes dataHash = 2;
+    string reserved = 3;
+    string info = 4;
+    repeated string authors = 5;
+}

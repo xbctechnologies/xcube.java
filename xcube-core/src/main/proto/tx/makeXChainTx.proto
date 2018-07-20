@@ -1,0 +1,48 @@
+syntax = "proto3";
+package xtypes;
+
+option go_package = "github.com/xblocksys/go-xblockchain/xcommon/xtypes/proto";
+option java_package = "com.xbctechnologies.core.apis.dto.xtypes.proto";
+option java_outer_classname = "MakeXChainTxProto";
+
+message MakeXChainTx {
+    int64 depth = 1;
+    bool hasAsset = 2;
+    bool enableSubAsset = 3;
+    bool nonExchangeChain = 4;
+
+    int64 airdropRate = 5;
+    repeated AssetHolder assetHolders = 7;
+    repeated Seed seeds = 8;
+    repeated ValidatorType validators = 9;
+    string customDesc = 10;
+    string coinName = 11;
+}
+
+message Seed {
+    string id = 1;
+    string ip = 2;
+    int64 port = 3;
+}
+
+message AssetHolder {
+    string address = 1;
+    string amount = 2;
+}
+
+message ValidatorType {
+    PubKey pubKey = 1;
+    string power = 2;
+
+    string companyName = 3;
+    string companyDesc = 4;
+    string companyUrl = 5;
+    string companyLogoUrl = 6;
+    string companyLat = 7;
+    string companyLon = 8;
+}
+
+message PubKey {
+    string type = 1;
+    string value = 2;
+}

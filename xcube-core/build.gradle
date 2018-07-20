@@ -1,0 +1,128 @@
+jar {
+    baseName = 'xcube-core'
+}
+
+def bintrayPass = hasProperty('bintrayPass') ? bintrayPass : ''
+def bintrayUser = hasProperty('bintrayUser') ? bintrayUser : ''
+def bintrayKey = hasProperty('bintrayApiKey') ? bintrayApiKey : ''
+def bintrayPublish = hasProperty('bintrayPublish') ? bintrayPublish : false
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath('com.google.protobuf:protobuf-gradle-plugin:0.8.6')
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+idea {
+    module {
+        sourceDirs += file("${projectDir}/src/main/proto")
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/proto'
+            include '**/*.proto'
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.6.1'
+    }
+}
+
+bintray {
+    user = "${bintrayUser}"
+    key = "${bintrayKey}"
+    publish = "${bintrayPublish}"
+    override = "${bintrayPublish}"
+    publications = ['mavenPublication']
+
+    pkg {
+        repo = 'com.xbctechnologies'  //bintray에 생성한 Repository 이름
+        name = 'core'  //bintray에 생성한 Package 이름
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/xbctechnologies/xcube.java.git'
+
+        version {
+            name = "${project.version}"
+            gpg {
+                sign = true
+                passphrase = "${bintrayPass}"
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            artifact sourcesJar {
+                classifier ""
+            }
+            groupId "${project.group}"
+            artifactId "${project.jar.baseName}"
+            version "${project.version}"
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Java core library of xblockchain')
+                root.appendNode('name', 'XCube core')
+                root.appendNode('url', 'https://github.com/xbctechnologies/xcube.java')
+                root.children().last() + project.ext.pomConfig
+            }
+        }
+    }
+}
+
+dependencies {
+    def httpVersion = '4.5.6'
+    def jacksonVersion = '2.9.6'
+    def swaggerVersion = '1.5.13'
+    def protobuf = '3.6.1'
+
+    compile project(':xcrypto')
+
+    compile "org.apache.commons:commons-lang3:3.6"
+    compile "commons-io:commons-io:2.6"
+    compile "io.swagger:swagger-annotations:$swaggerVersion"
+    compile "io.swagger:swagger-models:$swaggerVersion"
+    compile "io.springfox:springfox-swagger2:2.7.0"
+
+    /* Protocol Buffers */
+    compile("com.google.protobuf:protobuf-java:$protobuf")
+    compile("com.google.protobuf:protobuf-java-util:$protobuf")
+
+    /* HTTP Client */
+    compile "org.apache.httpcomponents:httpclient:$httpVersion"
+    compile "org.apache.httpcomponents:httpmime:$httpVersion"
+
+    /* Json */
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
+}

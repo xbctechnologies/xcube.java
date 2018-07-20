@@ -1,0 +1,33 @@
+jar {
+    baseName = 'tcmanager'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    project.ext {
+        springBootVersion = '2.0.4.RELEASE'
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$project.ext.springBootVersion")
+        //릴리즈 날짜를 보고 springloaded 보다 이전날짜에 릴리즈된 spring boot 버젼을 사용할 것
+        classpath("org.springframework:springloaded:1.2.8.RELEASE")
+    }
+}
+
+dependencies {
+    apply plugin: 'org.springframework.boot'
+
+    def springSwaggerVersion = '2.7.0'
+
+    compile project(':xcube-core')
+
+    testCompile("org.springframework.boot:spring-boot-starter-test:$project.ext.springBootVersion")
+    compile "org.springframework.boot:spring-boot-starter-web:$project.ext.springBootVersion"
+    compile("io.springfox:springfox-swagger2:$springSwaggerVersion")
+    compile("io.springfox:springfox-swagger-ui:$springSwaggerVersion")
+}
