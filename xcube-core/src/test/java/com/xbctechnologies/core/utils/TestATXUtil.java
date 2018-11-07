@@ -88,12 +88,21 @@ public class TestATXUtil {
 
     @Test
     public void dfdsa() {
-        BigInteger sum = new BigInteger("46989982000000000000000000");
-        BigInteger last = sum.add(new BigInteger("7200001000000000000000000"))
-                .add(new BigInteger("9014522525200980550019"))
-                .add(new BigInteger("801001613474800015200000"));
-        System.out.println(last);
-        //54,999,999,136,000,000,995,750,019
+        BigInteger sum = new BigInteger("9014400125199980550019");
+        BigInteger bonding1 = new BigInteger("7200000").multiply(new BigInteger("21")).multiply(new BigInteger("1000000000"));
+        BigInteger bonding2 = new BigInteger("1").multiply(new BigInteger("5")).multiply(new BigInteger("1000000000"));
+        BigInteger bonding3 = new BigInteger("99999").multiply(new BigInteger("5")).multiply(new BigInteger("1000000000"));
+
+        //9014522525200980550019
+        //9014522525216980550019
+
+        System.out.println(bonding1.add(bonding2).add(bonding3));
+
+
+        //993601506843101369
+        //151700000000000000
+        BigInteger sub = new BigInteger("2009017537726710808526806");
+        System.out.println(sub.subtract(new BigInteger("2009016544125203965425437")));
     }
 
     @Test

@@ -1334,7 +1334,7 @@ public class TestTxAPI extends TestParent {
         //여기서는 XTO 단위로 셋팅을 하였는데 이유는 Validator List의 Reward 값을 계산할때 XTO 단위로 더한후 CoinType으로 변환하기 때문에 validator.reward + delegator.reward 역시 XTO 단위로 더한후 ConinType으로 변환한다.
 
         //Validator Balance 확인
-        AccountBalanceResponse expectedValidatorBalacne = makeAccountBalance(validator, "10,000,016,151,101,511,823,726,806", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,017,537,626,711,808,526,806", "0", XTOType);
+        AccountBalanceResponse expectedValidatorBalacne = makeAccountBalance(validator, "10,000,016,164,800,004,974,325,437", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,017,551,325,204,959,125,437", "0", XTOType);
         AccountBalanceResponse actualValidatorBalance = xCube.getBalance(null, targetChainId, validator, XTOType).send();
         assertEquals(expectedValidatorBalacne.getBalance(), actualValidatorBalance.getBalance());
 
@@ -1434,7 +1434,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedDelegatorBalacne.getBalance(), actualDelegatorBalance.getBalance());
 
         //Validator Balance 확인
-        AccountBalanceResponse expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,016,151,101,511,823,726,806", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,017,537,626,711,808,526,806", "0", XTOType);
+        AccountBalanceResponse expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,016,164,800,004,974,325,437", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,017,551,325,204,959,125,437", "0", XTOType);
         AccountBalanceResponse actualValidatorBalance = xCube.getBalance(null, targetChainId, validator, XTOType).send();
         assertEquals(expectedVaidatorBalacne.getBalance(), actualValidatorBalance.getBalance());
 
@@ -1472,7 +1472,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedDelegatorBalacne.getBalance(), actualDelegatorBalance.getBalance());
 
         //Validator Balance 확인
-        expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,017,144,603,022,545,092,014", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,018,531,128,222,529,892,014", "0", XTOType);
+        expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,017,172,000,006,969,808,041", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,018,558,525,206,954,608,041", "0", XTOType);
         actualValidatorBalance = xCube.getBalance(null, targetChainId, validator, XTOType).send();
         assertEquals(expectedVaidatorBalacne.getBalance(), actualValidatorBalance.getBalance());
     }
@@ -1486,7 +1486,7 @@ public class TestTxAPI extends TestParent {
     @Order(order = 21)
     public void UndelegatingTxUndelegatingOfValidator() throws Exception {
         //Validator Balance 확인
-        AccountBalanceResponse expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,017,144,603,022,545,092,014", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,018,531,128,222,529,892,014", "0", XTOType);
+        AccountBalanceResponse expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,017,172,000,006,969,808,041", "790,996,613,474,800,015,200,000", "7,200,002,000,000,000,000,000,000", "2,009,018,558,525,206,954,608,041", "0", XTOType);
         AccountBalanceResponse actualValidatorBalance = xCube.getBalance(null, targetChainId, validator, XTOType).send();
         assertEquals(expectedVaidatorBalacne.getBalance(), actualValidatorBalance.getBalance());
 
@@ -1520,7 +1520,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedDelegatorBalacne.getBalance(), actualDelegatorBalance.getBalance());
 
         //Validator Balance 확인
-        expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,017,140,814,016,570,291,264", "790,995,613,474,800,015,200,000", "7,190,002,000,000,000,000,000,000", "2,006,229,223,215,218,737,381,264", "12,790,304,123,997,817,710,000", XTOType);
+        expectedVaidatorBalacne = makeAccountBalance(validator, "10,000,017,179,200,008,965,007,291", "790,995,613,474,800,015,200,000", "7,190,002,000,000,000,000,000,000", "2,006,229,261,547,897,268,577,291", "12,790,304,177,311,681,230,000", XTOType);
         actualValidatorBalance = xCube.getBalance(null, targetChainId, validator, XTOType).send();
         assertEquals(expectedVaidatorBalacne.getBalance(), actualValidatorBalance.getBalance());
     }
@@ -3416,7 +3416,7 @@ public class TestTxAPI extends TestParent {
         ExpectedRewardResult expectedRewardResult = new ExpectedRewardResult();
         expectedRewardResult.setTotalBalance(getInitBalance());
 
-//        CheckValidationCommonFields();
+        CheckValidationCommonFields();
         CommonTxCheckValidation();
         CommonTx(); //3번째 블록 (1번 = genesis block, 2번 = proof block)
         CommonTxOverTxSize();    //4번째 블록 (3block 보상)
@@ -3455,142 +3455,50 @@ public class TestTxAPI extends TestParent {
         calculateExpectedReward(expectedRewardResult, makeExpectedReward(16, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 10000));
 
-//        argsForCalculate.put(16l, putRewardArgs("1,000", "1"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), null);
-//        //예상값에 10,000을 차감한 이유는 BondingTx에서 Fee를 10,000으로 주었는데 해당 블록 보상은 다음블록에서 이루어 지기 때문이다.
-//        BigInteger subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 10000));
-//        TotalAtxResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
-//        UnbondingTxCheckValidation();
-//        UnbondingTxUnbonding(); //18번째 블록 (17 block 보상)
-//        UnbondingTxCheckValidationOfLockBalance();
-//        argsForCalculate.put(17l, putRewardArgs("1,000", "10,000"));
-//        unstakingList.add(new Unstaking(false, 3l, 17l, CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, NumberUtil.generateStringToBigInteger("800,000"))));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        //예상값에 1을 차감한 이유는 UnbondingTx에서 Fee를 1으로 주었는데 해당 블록 보상은 다음블록에서 이루어 지기 때문이다.
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
-//
-//        UnbondingTxUseLockingBalance(); //20번째 블록 (18 ~ 19 block 보상)
-//        argsForCalculate.put(18l, putRewardArgs("1,000", "1"));
-//        argsForCalculate.put(19l, putRewardArgs("1,000", "1"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 2792388));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
-//        DelegatingTxCheckValidation();
-//        DelegatingTxDelegating(); //21번째 블록 (20 block 보상)
-//        argsForCalculate.put(20l, putRewardArgs("1,000", "2,792,388"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
-//        DelegatingTxDelegatingToSelf();  //22번째 블록 (21 block 보상)
-//        argsForCalculate.put(21l, putRewardArgs("1,000", "1"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+        UnbondingTxCheckValidation();
+        UnbondingTxUnbonding(); //18번째 블록 (17 block 보상)
+        UnbondingTxCheckValidationOfLockBalance();
+        totalStakingOfValidator = totalStakingOfValidator.add(CurrencyUtil.generateXTO(CoinType, 1));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(17, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 10000)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        UnbondingTxUseLockingBalance(); //20번째 블록 (18 ~ 19 block 보상)
+        totalStakingOfValidator = totalStakingOfValidator.subtract(CurrencyUtil.generateXTO(CoinType, 800000));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(18, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(19, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 2000000));
+
+        DelegatingTxCheckValidation();
+        DelegatingTxDelegating(); //21번째 블록 (20 block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(20, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 2000000)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        DelegatingTxDelegatingToSelf();  //22번째 블록 (21 block 보상)
+        totalStakingOfDelegator = totalStakingOfDelegator.add(CurrencyUtil.generateXTO(CoinType, 99999));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(21, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
 //        UndelegatingTxCheckValidation();
 //        UndelegatingTxUndelegating();  //23번째 블록 (22 block 보상)
-//        argsForCalculate.put(22l, putRewardArgs("1,000", "1"));
-//        unstakingList.add(new Unstaking(true, 21l, 22l, CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, NumberUtil.generateStringToBigInteger("19,999"))));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
 //        UndelegatingTxUndelegatingOfValidator();  //24번째 블록 (23 block 보상)
-//        argsForCalculate.put(23l, putRewardArgs("1,000", "1"));
-//        //start가 3인 이유는 undelegating 이지만 validator가 undelegating을 하는데 해당 validator는 3번째 블록부터 bonding을하였기 때문이다.
-//        unstakingList.add(new Unstaking(false, 3l, 23l, CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, NumberUtil.generateStringToBigInteger("10,000"))));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
-//        GRProposalTxCheckValidation();  //26번째 블록 (24 ~ 25 block 보상)
-//        GRProposalTxGRProposal();
-//        argsForCalculate.put(24l, putRewardArgs("1,000", "1"));
-//        argsForCalculate.put(25l, putRewardArgs("1,000", "1"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 100));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
+//        GRProposalTxCheckValidation();
+//        GRProposalTxGRProposal(); //26번째 블록 (24 ~ 25 block 보상)
+
 //        GRProposalTxGRProposalOverriding(); //42번째 블록 (26 ~ 41 block 보상)
-//        argsForCalculate.put(26l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(27l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(28l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(29l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(30l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(31l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(32l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(33l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(34l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(35l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(36l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(37l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(38l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(39l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(40l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(41l, putRewardArgs("1,000", "100"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 100));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
 //        GRVoteTxCheckValidation(); //44번째 블록 (42 ~ 43 block 보상)
-//        argsForCalculate.put(42l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(43l, putRewardArgs("1,000", "100"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 10000));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
 //        GRVoteTxGRVoteDisagree(); //48번째 블록 (44 ~ 47 block 보상)
-//        argsForCalculate.put(44l, putRewardArgs("1,000", "10000"));
-//        argsForCalculate.put(45l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(46l, putRewardArgs("1,000", "0"));
-//        argsForCalculate.put(47l, putRewardArgs("1,000", "0"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
 //        GRVoteTxGRVoteAgree(); //52번째 블록 (48 ~ 51 block 보상)
-//        argsForCalculate.put(48l, putRewardArgs("1,000", "1"));
-//        argsForCalculate.put(49l, putRewardArgs("1,000", "100"));
-//        argsForCalculate.put(50l, putRewardArgs("1,000", "0"));
-//        argsForCalculate.put(51l, putRewardArgs("1,000", "0"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
 //        RecoverValidatorTxCheckValidation();
 //        RecoverValidatorTxRecoverValidator(); //53번째 블록 (52 block 보상)
-//        argsForCalculate.put(52l, putRewardArgs("10", "1"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
 //        UnstakingTxRevokeAllStake(); //56번째 블록 (53 ~ 55 block 보상)
-//        argsForCalculate.put(53l, putRewardArgs("10", "1"));
-//        argsForCalculate.put(54l, putRewardArgs("10", "1"));
-//        argsForCalculate.put(55l, putRewardArgs("10", "10000"));
-//        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), unstakingList);
-//        subReward = printRewardMap(false).add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
-//        totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-//        Assert.assertEquals(totalAmount.subtract(subReward), totalAtxResponse.getResult().getTotalBalance());
-//
+
 //        CheckATXBalance();
 //        MakeXChainTxCheckValidation();
 //        MakeXChainTxCheckValidationCompareParentChain();

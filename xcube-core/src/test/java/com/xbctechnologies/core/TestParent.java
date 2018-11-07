@@ -251,12 +251,12 @@ public class TestParent {
     }
 
     public void calculateExpectedReward(ExpectedRewardResult expectedRewardResult, ExpectedReward expectedReward) {
-        BigInteger totalCoinStakingOfValidator = CurrencyUtil.generateCurrencyUnitToCurrencyUnit(XTOType, CoinType, expectedReward.getTotalStakingOfValidator());
         BigInteger totalStaking = new BigInteger(expectedReward.getTotalStakingOfValidator().toString()).add(expectedReward.getTotalStakingOfDelegator());
-        expectedReward.setReward(CurrencyUtil.generateCurrencyUnitToCurrencyUnit(XTOType, CoinType, totalStaking).multiply(rewardXtoPerCoin));
+        totalStaking = CurrencyUtil.generateCurrencyUnitToCurrencyUnit(XTOType, CoinType, totalStaking);
+        expectedReward.setReward(totalStaking.multiply(rewardXtoPerCoin));
 
-        BigInteger rewardUnitAboutFee = new BigInteger(expectedReward.getOriginFee().toString()).divide(totalCoinStakingOfValidator);
-        expectedReward.setActualRewardAboutFee(rewardUnitAboutFee.multiply(totalCoinStakingOfValidator));
+        BigInteger rewardUnitAboutFee = new BigInteger(expectedReward.getOriginFee().toString()).divide(totalStaking);
+        expectedReward.setActualRewardAboutFee(rewardUnitAboutFee.multiply(totalStaking));
         expectedReward.setDiffReward(expectedReward.getOriginFee().subtract(expectedReward.getActualRewardAboutFee()));
 
         expectedRewardResult.getExpectedRewards().add(expectedReward);
