@@ -1,28 +1,36 @@
 package com.xbctechnologies.core;
 
+import com.xbctechnologies.core.apis.TestXCube;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
 import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
+import com.xbctechnologies.core.apis.dto.res.data.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.TxGRProposalBody;
-import com.xbctechnologies.core.apis.TestXCube;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
 import com.xbctechnologies.core.utils.Base64Util;
 import com.xbctechnologies.core.utils.CurrencyUtil;
+import com.xbctechnologies.core.utils.NumberUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.junit.Before;
 
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.CoinType;
+import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.GXTOType;
 
 public class TestParent {
     public XCube xCube;
     public TestXCube testXCube;
 
+    private static Map<Long, Map<String, BigInteger>> subRewardMap = new HashMap<>();
     public final String targetChainId = "1T";
 
     public final String sender = "0x9ac601f1a9c8385cb1fd794d030898168b0b617a";
@@ -31,6 +39,8 @@ public class TestParent {
     public BigInteger receiverAmount = CurrencyUtil.generateXTO(CoinType, 4000000);
     public final String validator = "0xd52ff6084b6dec53b74b2ac9133fe3541709fa7f";
     public BigInteger validatorAmount = CurrencyUtil.generateXTO(CoinType, 10000000);
+
+    public final BigInteger rewardXtoPerCoin = CurrencyUtil.generateXTO(GXTOType, 1);
 
     public final String testFile = "/testFile";
     public final String testDummyFile = "/checkNotSameFile";
@@ -182,5 +192,197 @@ public class TestParent {
         expectedGR.setCurrentReflection(new TxGRProposalBody.CurrentReflection(0, 1));
 
         return expectedGR;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public class Unstaking {
+        private boolean isOnlyDelegator;
+        private long startBlockNo;
+        private long endBlockNo;
+        private BigInteger unstaking;
+    }
+
+    @Data
+    public class ExpectedReward {
+        private long blockNo;
+
+        private BigInteger totalStakingOfValidator;
+        private BigInteger totalStakingOfDelegator;
+
+        private BigInteger reward;
+        private BigInteger originFee;
+        private BigInteger actualRewardAboutFee;
+        private BigInteger diffReward;
+
+//        public ExpectedReward()
+    }
+
+    @Data
+    public class ExpectedRewardResult {
+        private List<ExpectedReward> expectedRewards = new ArrayList<>();
+        private BigInteger totalReward = new BigInteger("0");
+        private BigInteger totalDiffReward = new BigInteger("0");
+    }
+
+    @Data
+    @AllArgsConstructor
+    public class RewardResult {
+        private boolean isOnlyDelegator;
+        private long startBlockNo;
+        private long endBlockNo;
+        private BigInteger unstaking;
+    }
+
+    public void calculateExpectedReward(ExpectedRewardResult expectedRewardResult, ExpectedReward expectedReward) {
+
+
+        expectedRewardResult.getExpectedRewards().add(expectedReward);
+        expectedRewardResult.setTotalReward(expectedRewardResult.getTotalReward().add(expectedReward.getReward()).add(expectedReward.getActualRewardAboutFee()));
+        expectedRewardResult.setTotalDiffReward(expectedRewardResult.getTotalDiffReward().add(expectedReward.getDiffReward()));
+    }
+
+
+    /**
+     * Unbonding, Undelegating에 따른 보상값이 차감될때.
+     *
+     * @return
+     */
+    public BigInteger calculateRewardWithExpectedAndActual(long blockCnt, BigInteger totalStaking, BigInteger totalStakingOfValidator, BigInteger totalExpectedRewardAmount, BigInteger fee, List<Unstaking> unstakingList) {
+        subRewardMap = new HashMap<>();
+        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            //Validator로 등록하였지만 보상이 없는 경우 (블록생성에 서명을 하지 않음. - 노드가 기동중이 아님)
+            if (result.getRewardBlocks() == null) {
+                continue;
+            }
+        }
+
+        /*for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            //Validator로 등록하였지만 보상이 없는 경우
+            if (result.getRewardBlocks() == null) {
+                continue;
+            }
+            for (ValidatorListResponse.Result.Reward reward : result.getRewardBlocks()) {
+                Map<String, BigInteger> expectedRewardMap = argsForCalculate.get(reward.getBlockNo());
+
+                BigInteger bondingBalance = new BigInteger(reward.getBondingBalance().toString());
+                BigInteger bondingBalanceOfValidator = new BigInteger(reward.getBondingBalanceOfValidator().toString());
+
+                BigInteger cumulativeUnstakingOfValidator = new BigInteger("0");
+                BigInteger cumulativeUnstakingOfDelegator = new BigInteger("0");
+                if (unstakingList != null && unstakingList.size() > 0) {
+                    for (Unstaking unstaking : unstakingList) {
+                        if (reward.getBlockNo() >= unstaking.startBlockNo && reward.getBlockNo() <= unstaking.endBlockNo) {
+                            if (!unstaking.isOnlyDelegator) {
+                                cumulativeUnstakingOfValidator = cumulativeUnstakingOfValidator.add(unstaking.unstaking);
+                            }
+                            cumulativeUnstakingOfDelegator = cumulativeUnstakingOfDelegator.add(unstaking.unstaking);
+                        }
+                    }
+                    bondingBalanceOfValidator = bondingBalanceOfValidator.add(cumulativeUnstakingOfValidator);
+                    bondingBalance = bondingBalance.add(cumulativeUnstakingOfDelegator);
+                }
+                BigInteger bondingBalanceOfCoinType = CurrencyUtil.generateCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, bondingBalance);
+                BigInteger bondingBalanceOfValidatorOfCoinType = CurrencyUtil.generateCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, bondingBalanceOfValidator);
+
+                //Remove remainder from the original reward
+                BigInteger unitForReward = expectedRewardMap.get("expectedRewardWithFee").divide(bondingBalanceOfCoinType);
+                BigInteger totalReward = unitForReward.multiply(bondingBalanceOfCoinType);
+
+                //Calculate reward ratio of validator and delegator
+                BigInteger rewardUnitForParticipant = new BigInteger(totalReward.toString()).divide(new BigInteger("100"));
+
+                BigInteger expectedValidatorReward = new BigInteger(rewardUnitForParticipant.toString())
+                        .multiply(new BigInteger(String.valueOf(reward.getValidatorRewardRate())))
+                        .divide(bondingBalanceOfValidatorOfCoinType)
+                        .multiply(bondingBalanceOfValidatorOfCoinType);
+
+                BigInteger expectedDelegatorReward = new BigInteger(rewardUnitForParticipant.toString())
+                        .multiply(new BigInteger(String.valueOf(reward.getDelegatorRewardRate())))
+                        .divide(bondingBalanceOfCoinType)
+                        .multiply(bondingBalanceOfCoinType);
+
+                //Calculate remain balance after unstaking
+                BigInteger expectedGivenReward = expectedValidatorReward.add(expectedDelegatorReward);
+                BigInteger expectedRemainValidatorReward = new BigInteger(expectedValidatorReward.toString());
+                BigInteger expectedRemainDelegatorReward = new BigInteger(expectedDelegatorReward.toString());
+
+                BigInteger payValidatorReward = null;
+                BigInteger payDelegatorReward = null;
+                if (unstakingList != null && unstakingList.size() > 0) {
+                    payValidatorReward = expectedValidatorReward.divide(bondingBalanceOfValidatorOfCoinType)
+                            .multiply(CurrencyUtil.generateCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, cumulativeUnstakingOfValidator));
+                    payDelegatorReward = expectedDelegatorReward.divide(bondingBalanceOfCoinType)
+                            .multiply(CurrencyUtil.generateCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, cumulativeUnstakingOfDelegator));
+
+                    expectedGivenReward = expectedGivenReward.subtract(payValidatorReward).subtract(payDelegatorReward);
+                    expectedRemainValidatorReward = expectedRemainValidatorReward.subtract(payValidatorReward);
+                    expectedRemainDelegatorReward = expectedRemainDelegatorReward.subtract(payDelegatorReward);
+                }
+
+                Map<String, BigInteger> rewardMap = new HashMap<>();
+                rewardMap.put("expectedPayValidatorReward", payValidatorReward);
+                rewardMap.put("expectedPayDelegatorReward", payDelegatorReward);
+
+                rewardMap.put("expectedGivenReward", expectedGivenReward);
+                rewardMap.put("actualGivenReward", reward.getRewardBalanceForValidator().add(reward.getRewardBalanceForDelegator()));
+
+                rewardMap.put("expectedRemainValidatorReward", expectedRemainValidatorReward);
+                rewardMap.put("expectedRemainDelegatorReward", expectedRemainDelegatorReward);
+                rewardMap.put("actualRemainValidatorReward", reward.getRewardBalanceForValidator());
+                rewardMap.put("actualRemainDelegatorReward", reward.getRewardBalanceForDelegator());
+
+                rewardMap.put("subReward", expectedRewardMap.get("expectedRewardWithFee").subtract(expectedValidatorReward.add(expectedDelegatorReward)));
+                subRewardMap.put(reward.getBlockNo(), rewardMap);
+
+                totalAmount = totalAmount.add(expectedRewardMap.get("addedReward"));
+
+                assertEquals(rewardMap.get("expectedGivenReward"), rewardMap.get("actualGivenReward"));
+                assertEquals(rewardMap.get("expectedRemainValidatorReward"), rewardMap.get("actualRemainValidatorReward"));
+                assertEquals(rewardMap.get("expectedRemainDelegatorReward"), rewardMap.get("actualRemainDelegatorReward"));
+            }
+        }*/
+
+        return totalExpectedRewardAmount;
+    }
+
+    public BigInteger printRewardMap(boolean isDisplay) {
+        final List<BigInteger> subReward = new ArrayList<>();
+        subReward.add(new BigInteger("0"));
+        subRewardMap.forEach((blockNo, rewardMap) -> {
+            subReward.set(0, subReward.get(0).add(rewardMap.get("subReward")));
+            if (isDisplay) {
+                System.out.println(
+                        String.format("blockNo:%s, subReward:%s, expectedPayValidatorReward:%s, expectedPayDelegatorReward:%s, expectedGivenReward:%s, actualGivenReward:%s, expectedRemainValidatorReward:%s, actualRemainValidatorReward:%s, expectedRemainDelegatorReward:%s, actualRemainDelegatorReward:%s",
+                                blockNo,
+                                NumberUtil.comma(rewardMap.get("subReward")),
+                                NumberUtil.comma(rewardMap.get("expectedPayValidatorReward")),
+                                NumberUtil.comma(rewardMap.get("expectedPayDelegatorReward")),
+                                NumberUtil.comma(rewardMap.get("expectedGivenReward")),
+                                NumberUtil.comma(rewardMap.get("actualGivenReward")),
+                                NumberUtil.comma(rewardMap.get("expectedRemainValidatorReward")),
+                                NumberUtil.comma(rewardMap.get("actualRemainValidatorReward")),
+                                NumberUtil.comma(rewardMap.get("expectedRemainDelegatorReward")),
+                                NumberUtil.comma(rewardMap.get("actualRemainDelegatorReward"))
+                        ));
+            }
+        });
+
+        return subReward.get(0);
+    }
+
+    /**
+     * 각 블록No에서의 예상되는 Reward 셋팅
+     *
+     * @param addedReward
+     * @param fee         이전 블록생성시 발생한 Fee
+     * @return
+     */
+    public Map<String, BigInteger> putRewardArgs(String addedReward, String fee) {
+        Map<String, BigInteger> args = new HashMap<>();
+        args.put("addedReward", CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, NumberUtil.generateStringToBigInteger(addedReward)));
+        args.put("expectedRewardWithFee", args.get("addedReward").add(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, NumberUtil.generateStringToBigInteger(fee))));
+        return args;
     }
 }
