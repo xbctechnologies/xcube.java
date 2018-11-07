@@ -5,6 +5,7 @@ import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
 import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
+import com.xbctechnologies.core.apis.dto.res.data.TotalAtxResponse;
 import com.xbctechnologies.core.apis.dto.res.data.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.TxGRProposalBody;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
@@ -23,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.CoinType;
-import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.GXTOType;
+import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.*;
+import static org.junit.Assert.assertEquals;
 
 public class TestParent {
     public XCube xCube;
@@ -194,6 +195,15 @@ public class TestParent {
         return expectedGR;
     }
 
+    public BigInteger getInitBalance() {
+        BigInteger totalAmount = new BigInteger("0");
+        for (int i = 1; i <= 10; i++) {
+            totalAmount = totalAmount.add(new BigInteger(String.valueOf(i) + "000000000000000000000000"));
+        }
+
+        return totalAmount;
+    }
+
     @Data
     @AllArgsConstructor
     public class Unstaking {
@@ -214,34 +224,57 @@ public class TestParent {
         private BigInteger originFee;
         private BigInteger actualRewardAboutFee;
         private BigInteger diffReward;
-
-//        public ExpectedReward()
     }
 
     @Data
     public class ExpectedRewardResult {
         private List<ExpectedReward> expectedRewards = new ArrayList<>();
+        private BigInteger totalBalance;
         private BigInteger totalReward = new BigInteger("0");
         private BigInteger totalDiffReward = new BigInteger("0");
     }
 
-    @Data
-    @AllArgsConstructor
-    public class RewardResult {
-        private boolean isOnlyDelegator;
-        private long startBlockNo;
-        private long endBlockNo;
-        private BigInteger unstaking;
+    public ExpectedReward makeExpectedReward(long blockNo, BigInteger totalStakingOfValidator, BigInteger totalStakingOfDelegator, BigInteger originFee) {
+        ExpectedReward expectedReward = new ExpectedReward();
+        expectedReward.setBlockNo(blockNo);
+
+        expectedReward.totalStakingOfValidator = new BigInteger(totalStakingOfValidator.toString());
+        expectedReward.totalStakingOfDelegator = new BigInteger(totalStakingOfDelegator.toString());
+
+        if (originFee == null) {
+            expectedReward.originFee = new BigInteger("0");
+        } else {
+            expectedReward.originFee = new BigInteger(originFee.toString());
+        }
+
+        return expectedReward;
     }
 
     public void calculateExpectedReward(ExpectedRewardResult expectedRewardResult, ExpectedReward expectedReward) {
+        BigInteger totalCoinStakingOfValidator = CurrencyUtil.generateCurrencyUnitToCurrencyUnit(XTOType, CoinType, expectedReward.getTotalStakingOfValidator());
+        BigInteger totalStaking = new BigInteger(expectedReward.getTotalStakingOfValidator().toString()).add(expectedReward.getTotalStakingOfDelegator());
+        expectedReward.setReward(CurrencyUtil.generateCurrencyUnitToCurrencyUnit(XTOType, CoinType, totalStaking).multiply(rewardXtoPerCoin));
 
+        BigInteger rewardUnitAboutFee = new BigInteger(expectedReward.getOriginFee().toString()).divide(totalCoinStakingOfValidator);
+        expectedReward.setActualRewardAboutFee(rewardUnitAboutFee.multiply(totalCoinStakingOfValidator));
+        expectedReward.setDiffReward(expectedReward.getOriginFee().subtract(expectedReward.getActualRewardAboutFee()));
 
         expectedRewardResult.getExpectedRewards().add(expectedReward);
-        expectedRewardResult.setTotalReward(expectedRewardResult.getTotalReward().add(expectedReward.getReward()).add(expectedReward.getActualRewardAboutFee()));
         expectedRewardResult.setTotalDiffReward(expectedRewardResult.getTotalDiffReward().add(expectedReward.getDiffReward()));
+
+        BigInteger tempTotalReward = expectedRewardResult.getTotalReward().add(expectedReward.getReward());
+        tempTotalReward = tempTotalReward.add(expectedReward.getActualRewardAboutFee());
+        expectedRewardResult.setTotalReward(tempTotalReward);
+
+        BigInteger tempTotalBalance = expectedRewardResult.getTotalBalance().add(expectedReward.getReward()).subtract(expectedReward.getOriginFee());
+        tempTotalBalance = tempTotalBalance.add(expectedReward.getActualRewardAboutFee());
+        expectedRewardResult.setTotalBalance(tempTotalBalance);
     }
 
+    public void assertEqualTotalBalance(ExpectedRewardResult expectedRewardResult, BigInteger subAmount) {
+        TotalAtxResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
+        assertEquals(expectedRewardResult.getTotalBalance().subtract(subAmount), totalAtxResponse.getResult().getTotalBalance());
+    }
 
     /**
      * Unbonding, Undelegating에 따른 보상값이 차감될때.

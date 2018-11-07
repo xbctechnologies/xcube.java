@@ -3401,42 +3401,43 @@ public class TestTxAPI extends TestParent {
 
     }
 
-    public BigInteger getInitBalance() {
-        BigInteger totalAmount = new BigInteger("0");
-        for (int i = 1; i <= 10; i++) {
-            totalAmount = totalAmount.add(new BigInteger(String.valueOf(i) + "000000000000000000000000"));
-        }
-
-        return totalAmount;
+    @Test
+    public void testTr() {
+        TotalAtxResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
+        System.out.println(JsonUtil.generateClassToJson(totalAtxResponse.getResult()));
     }
 
     @Test
     public void TestAmount() throws Exception {
-        Map<Long, Map<String, BigInteger>> argsForCalculate = new HashMap<>();
-        BigInteger totalExpectedRewardAmount = new BigInteger("0");
-
-        BigInteger totalStakingOfValidator = CurrencyUtil.generateXTO(CoinType, 10000000);
-        BigInteger totalStakingOfDelegator = new BigInteger("0");
-        BigInteger totalStaking = new BigInteger(totalStakingOfValidator.toString()).add(totalStakingOfDelegator);
-
         List<Unstaking> unstakingList = new ArrayList<>();
 
-        CheckValidationCommonFields();
+        BigInteger totalStakingOfValidator = CurrencyUtil.generateXTO(CoinType, 8000000);
+        BigInteger totalStakingOfDelegator = new BigInteger("0");
+        ExpectedRewardResult expectedRewardResult = new ExpectedRewardResult();
+        expectedRewardResult.setTotalBalance(getInitBalance());
+
+//        CheckValidationCommonFields();
         CommonTxCheckValidation();
         CommonTx(); //3번째 블록 (1번 = genesis block, 2번 = proof block)
         CommonTxOverTxSize();    //4번째 블록 (3block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(1, totalStakingOfValidator, totalStakingOfDelegator, null));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(2, totalStakingOfValidator, totalStakingOfDelegator, null));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(3, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 3));
+
+
 //        calculateRewardWithExpectedAndActual(3, totalStaking, totalStakingOfValidator, totalExpectedRewardAmount, null);
 //        xCube.getBlockLatestBlock(null, targetChainId).send().getBlock().getBlockNo();
 //        argsForCalculate.put(3l, putRewardArgs("1,000", "1"));
 
-        CommonTxSameSenderAndReceiver(); //5번째 블록 (4block 보상)
+//        CommonTxSameSenderAndReceiver(); //5번째 블록 (4block 보상)
 
-        FileTxCheckValidation();
-        FileTxCheckRegisterValidation(); //6 ~ 9번째 블록 (5 ~ 8 block 보상)
+//        FileTxCheckValidation();
+//        FileTxCheckRegisterValidation(); //6 ~ 9번째 블록 (5 ~ 8 block 보상)
 
-        FileTxCheckOrigin();    //10번째 블록 (9 ~ 10 Block 보상 - sleep이 있어서 proof block(11번째 블록)으로 인하여 보상이루어 짐.)
+//        FileTxCheckOrigin();    //10번째 블록 (9 ~ 10 Block 보상 - sleep이 있어서 proof block(11번째 블록)으로 인하여 보상이루어 짐.)
 
-        FileTxOverriding(); //12 ~ 16번째 블록 (12 ~ 15 block 보상)
+//        FileTxOverriding(); //12 ~ 16번째 블록 (12 ~ 15 block 보상)
 
 //        BondingTxCheckValidation();
 //        BondingTxBonding(); //17번째 블록 (16 block 보상)
@@ -3599,7 +3600,7 @@ public class TestTxAPI extends TestParent {
 //        System.out.println(JsonUtil.generateClassToJson(currentGovernance.getGR()));
     }
 
-        @Test
+    @Test
     public void test() throws Exception {
         CheckValidationCommonFields();
         CommonTxCheckValidation();
