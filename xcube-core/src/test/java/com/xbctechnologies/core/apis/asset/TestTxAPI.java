@@ -62,7 +62,7 @@ public class TestTxAPI extends TestParent {
                 .build();
         TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
         assertNotNull(txSendResponse.getError());
-        Assert.assertEquals(304, txSendResponse.getError().getCode());
+        Assert.assertEquals(508, txSendResponse.getError().getCode());
 
         //TargetChainID 와 CLI에 설정되 ChainID가 다른경우.
         txRequest = txRequest = makeDefaultBuilder()
@@ -76,7 +76,7 @@ public class TestTxAPI extends TestParent {
                 .build();
         txSendResponse = xCube.sendTransaction(txRequest).send();
         assertNotNull(txSendResponse.getError());
-        Assert.assertEquals(304, txSendResponse.getError().getCode());
+        Assert.assertEquals(508, txSendResponse.getError().getCode());
 
         //Fee가 부족한 경우.
         txRequest = makeDefaultBuilder()
@@ -886,7 +886,7 @@ public class TestTxAPI extends TestParent {
                 .withReceiver(sender)
                 .withPayloadType(ApiEnum.PayloadType.BondingType)
                 .withFee(CurrencyUtil.generateXTO(CoinType, 10000))
-                .withAmount(CurrencyUtil.generateXTO(CoinType, CurrencyUtil.generateXTO(CoinType, 699000100)))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 699000100))
                 .withPayloadBody(new TxBondingBody())
                 .build();
         sendResponse = xCube.bonding(txRequest).send();
@@ -3425,22 +3425,36 @@ public class TestTxAPI extends TestParent {
         calculateExpectedReward(expectedRewardResult, makeExpectedReward(3, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 3));
 
+        CommonTxSameSenderAndReceiver(); //5번째 블록 (4block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(4, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 3)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 2));
 
-//        calculateRewardWithExpectedAndActual(3, totalStaking, totalStakingOfValidator, totalExpectedRewardAmount, null);
-//        xCube.getBlockLatestBlock(null, targetChainId).send().getBlock().getBlockNo();
-//        argsForCalculate.put(3l, putRewardArgs("1,000", "1"));
+        FileTxCheckValidation();
+        FileTxCheckRegisterValidation(); //6 ~ 9번째 블록 (5 ~ 8 block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(5, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 2)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(6, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(7, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(8, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
 
-//        CommonTxSameSenderAndReceiver(); //5번째 블록 (4block 보상)
+        FileTxCheckOrigin();    //10번째 블록 (9 ~ 10 Block 보상 - sleep이 있어서 proof block(11번째 블록)으로 인하여 보상이루어 짐.)
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(9, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(10, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 0));
 
-//        FileTxCheckValidation();
-//        FileTxCheckRegisterValidation(); //6 ~ 9번째 블록 (5 ~ 8 block 보상)
+        FileTxOverriding(); //12 ~ 16번째 블록 (11 ~ 15 block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(11, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 0)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(12, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(13, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(14, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(15, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
 
-//        FileTxCheckOrigin();    //10번째 블록 (9 ~ 10 Block 보상 - sleep이 있어서 proof block(11번째 블록)으로 인하여 보상이루어 짐.)
+        BondingTxCheckValidation();
+        BondingTxBonding(); //17번째 블록 (16 block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(16, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)));
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 10000));
 
-//        FileTxOverriding(); //12 ~ 16번째 블록 (12 ~ 15 block 보상)
-
-//        BondingTxCheckValidation();
-//        BondingTxBonding(); //17번째 블록 (16 block 보상)
 //        argsForCalculate.put(16l, putRewardArgs("1,000", "1"));
 //        totalAmount = calculateRewardWithExpectedAndActual(argsForCalculate, null, getInitBalance(), null);
 //        //예상값에 10,000을 차감한 이유는 BondingTx에서 Fee를 10,000으로 주었는데 해당 블록 보상은 다음블록에서 이루어 지기 때문이다.
