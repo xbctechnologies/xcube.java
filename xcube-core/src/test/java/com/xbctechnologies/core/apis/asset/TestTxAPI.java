@@ -68,7 +68,7 @@ public class TestTxAPI extends TestParent {
         Assert.assertEquals(508, txSendResponse.getError().getCode());
 
         //TargetChainID 와 CLI에 설정되 ChainID가 다른경우.
-        txRequest = txRequest = makeDefaultBuilder()
+        txRequest = makeDefaultBuilder()
                 .withTargetChainId("100T")
                 .withSender(sender)
                 .withReceiver(receiver)
