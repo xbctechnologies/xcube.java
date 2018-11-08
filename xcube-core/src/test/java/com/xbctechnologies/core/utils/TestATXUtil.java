@@ -100,9 +100,9 @@ public class TestATXUtil {
 
 
         //993601506843101369
-        //151700000000000000
-        BigInteger sub = new BigInteger("2009017537726710808526806");
-        System.out.println(sub.subtract(new BigInteger("2009016544125203965425437")));
+        //1,007,260,002,995,482,604
+        BigInteger sub = new BigInteger("9014522525200980550019");
+        System.out.println(sub.subtract(new BigInteger("9014400125199980550019")));
     }
 
     @Test
