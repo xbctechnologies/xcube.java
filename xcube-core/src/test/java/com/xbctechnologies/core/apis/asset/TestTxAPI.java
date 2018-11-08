@@ -3461,6 +3461,8 @@ public class TestTxAPI extends TestParent {
         calculateExpectedReward(expectedRewardResult, makeExpectedReward(55, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 10000)), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
 
+        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
         CheckATXBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
         MakeXChainTxCheckValidation();
         MakeXChainTxCheckValidationCompareParentChain();
