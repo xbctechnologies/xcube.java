@@ -6,7 +6,6 @@ import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
 import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
 import com.xbctechnologies.core.apis.dto.res.data.TotalAtxResponse;
-import com.xbctechnologies.core.apis.dto.res.data.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.TxGRProposalBody;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
@@ -305,25 +304,22 @@ public class TestParent {
 
         //Fee에 대한 보상값을 계산할때 블록당 전체Fee / 총지분량(ATX) 할때 소숫점이 발생하여, 차이값이 생김.
         //subAmount는 실제로 이전 트랜잭션의 Fee 값이지만 이 메소드를 수행하는 시점에는 해당 Fee에 대한 보상이 이루어지지 않았기 대문에 1의 차이가 발생한다. (보상은 현재 블록의 이전블록 까지 이루어짐)
-        BigInteger actualRewardAboutFee = new BigInteger("0");
-        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
-        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
-            actualRewardAboutFee = actualRewardAboutFee.add(result.getRewardAmountFee());
+        BigInteger rewardByBlock = new BigInteger("0");
+        for (ExpectedReward expectedReward : expectedRewardResult.getExpectedRewards()) {
+            rewardByBlock = rewardByBlock.add(expectedReward.getReward());
         }
-        BigInteger pureActualBalance = expectedRewardResult.getTotalBalance().subtract(expectedRewardResult.getTotalReward());
-        pureActualBalance = pureActualBalance.add(actualRewardAboutFee);
+        BigInteger pureActualBalance = expectedRewardResult.getTotalBalance().subtract(rewardByBlock);
 
         assertEquals(expectedRewardResult.getTotalBalance().subtract(subAmount), totalAtxResponse.getResult().getTotalBalance());
-//        assertEquals(expectedRewardResult.getTotalDiffReward(), getInitBalance().subtract(pureActualBalance));
+        assertEquals(expectedRewardResult.getTotalDiffReward(), getInitBalance().subtract(pureActualBalance));
 
         System.out.println(String.format("totalBalance:%s\ntotalReward:%s\ninitBalance:%s\npureActualBalance:%s\nbalanceDiff:%s\nlostAmountByFee:%s",
                 NumberUtil.comma(expectedRewardResult.getTotalBalance()),
                 NumberUtil.comma(expectedRewardResult.getTotalReward()),
                 NumberUtil.comma(getInitBalance()),
                 NumberUtil.comma(pureActualBalance),
-                NumberUtil.comma(getInitBalance().subtract(pureActualBalance)),
+                CurrencyUtil.generateStringCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, getInitBalance().subtract(pureActualBalance)),
                 CurrencyUtil.generateStringCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, expectedRewardResult.getTotalDiffReward())
         ));
-        System.out.println(getInitBalance().subtract(pureActualBalance).subtract(expectedRewardResult.getTotalDiffReward()));
     }
 }
