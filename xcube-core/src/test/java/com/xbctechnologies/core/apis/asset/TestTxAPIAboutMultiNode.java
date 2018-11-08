@@ -560,8 +560,11 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         originSendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(originSendResponse.getError());
 
-        expectedSender = makeAccountBalance(receiver, "4,000,019", "3,999,919", "100", "2", "0", CoinType);
+        expectedSender = makeAccountBalance(receiver, "4,000,021", "3,999,919", "100", "2", "0", CoinType);
+        actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
         actualSender = xCube.getBalance(null, targetChainId, receiver, CoinType).send();
+        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         //모두 수정 불가능 하도록 파일등록
