@@ -5,6 +5,7 @@ import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
 import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
+import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.data.DataAccountResponse;
 import com.xbctechnologies.core.apis.dto.res.data.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
@@ -12,6 +13,7 @@ import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.TxBondingBody;
 import com.xbctechnologies.core.apis.dto.xtypes.TxCommonBody;
 import com.xbctechnologies.core.apis.dto.xtypes.TxFileBody;
+import com.xbctechnologies.core.apis.dto.xtypes.TxUnbondingBody;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
 import com.xbctechnologies.core.order.Order;
@@ -29,6 +31,7 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.CoinType;
@@ -246,12 +249,12 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertNull(txSendResponse.getError());
         assertNotNull(txSendResponse.getResult());
 
-        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,989", "6,999,989", "0", "0", "0", CoinType);
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,989,000,000,000,000,000,000", "6,999,989,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
-        AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,010", "3,999,910", "100", "0", "0", CoinType);
-        AccountBalanceResponse actualReceiver = xCube.getBalance(null, targetChainId, receiver, CoinType).send();
+        AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,010,000,000,000,000,000,000", "3,999,910,000,000,000,000,000,000", "100,000,000,000,000,000,000", "0", "0", XTOType);
+        AccountBalanceResponse actualReceiver = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         assertEquals(expectedReceiver.getBalance(), actualReceiver.getBalance());
     }
 
@@ -282,12 +285,12 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertNull(txSendResponse.getError());
         assertNotNull(txSendResponse.getResult());
 
-        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,976", "6,999,976", "0", "0", "0", CoinType);
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,976,000,000,000,000,000,000", "6,999,976,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
-        AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,020", "3,999,920", "100", "0", "0", CoinType);
-        AccountBalanceResponse actualReceiver = xCube.getBalance(null, targetChainId, receiver, CoinType).send();
+        AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,020,250,000,100,000,000,000", "3,999,920,000,000,000,000,000,000", "100,000,000,000,000,000,000", "250,000,100,000,000,000", "0", XTOType);
+        AccountBalanceResponse actualReceiver = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         assertEquals(expectedReceiver.getBalance(), actualReceiver.getBalance());
     }
 
@@ -312,8 +315,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertNull(txSendResponse.getError());
         assertNotNull(txSendResponse.getResult());
 
-        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,974", "6,999,974", "0", "0", "0", CoinType);
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,974,000,000,000,000,000,000", "6,999,974,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
     }
 
@@ -486,8 +489,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         TxSendResponse dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,973", "6,999,973", "0", "0", "0", CoinType);
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,973,000,000,000,000,000,000", "6,999,973,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         //파일 등록시 이미 존재하는 경우.
@@ -543,8 +546,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        expectedSender = makeAccountBalance(sender, "6,999,972", "6,999,972", "0", "0", "0", CoinType);
-        actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        expectedSender = makeAccountBalance(sender, "6,999,972,000,000,000,000,000,000", "6,999,972,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         //모두 수정가능한 파일이 수정되는지 확인.
@@ -560,11 +563,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         originSendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(originSendResponse.getError());
 
-        expectedSender = makeAccountBalance(receiver, "4,000,021", "3,999,919", "100", "2", "0", CoinType);
+        expectedSender = makeAccountBalance(receiver, "4,000,021,000,000,500,000,000,000", "3,999,919,000,000,000,000,000,000", "100,000,000,000,000,000,000", "2,000,000,500,000,000,000", "0", XTOType);
         actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
-        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
-        actualSender = xCube.getBalance(null, targetChainId, receiver, CoinType).send();
-        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         //모두 수정 불가능 하도록 파일등록
@@ -588,8 +588,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        expectedSender = makeAccountBalance(sender, "6,999,971", "6,999,971", "0", "0", "0", CoinType);
-        actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        expectedSender = makeAccountBalance(sender, "6,999,971,000,000,000,000,000,000", "6,999,971,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         //모두 수정이 불가능한지 확인
@@ -686,8 +686,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         TxSendResponse dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,969", "6,999,969", "0", "0", "0", CoinType);
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,969,000,000,000,000,000,000", "6,999,969,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         DataAccountResponse dataAccountResponse = xCube.getDataAccount(null, targetChainId, dataResponse.getResult().getDataAccountAddr()).send();
@@ -721,8 +721,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        expectedSender = makeAccountBalance(sender, "6,999,968", "6,999,968", "0", "0", "0", CoinType);
-        actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        expectedSender = makeAccountBalance(sender, "6,999,968,000,000,000,000,000,000", "6,999,968,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         dataAccountResponse = xCube.getDataAccount(null, targetChainId, dataResponse.getResult().getDataAccountAddr()).send();
@@ -761,8 +761,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        expectedSender = makeAccountBalance(sender, "6,999,967", "6,999,967", "0", "0", "0", CoinType);
-        actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        expectedSender = makeAccountBalance(sender, "6,999,967,000,000,000,000,000,000", "6,999,967,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         dataAccountResponse = xCube.getDataAccount(null, targetChainId, dataResponse.getResult().getDataAccountAddr()).send();
@@ -801,8 +801,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        expectedSender = makeAccountBalance(sender, "6,999,966", "6,999,966", "0", "0", "0", CoinType);
-        actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        expectedSender = makeAccountBalance(sender, "6,999,966,000,000,000,000,000,000", "6,999,966,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         dataAccountResponse = xCube.getDataAccount(null, targetChainId, dataResponse.getResult().getDataAccountAddr()).send();
@@ -842,8 +842,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         dataResponse = xCube.sendTransaction(txRequest).send();
         assertNull(dataResponse.getError());
 
-        expectedSender = makeAccountBalance(sender, "6,999,965", "6,999,965", "0", "0", "0", CoinType);
-        actualSender = xCube.getBalance(null, targetChainId, sender, CoinType).send();
+        expectedSender = makeAccountBalance(sender, "6,999,965,000,000,000,000,000,000", "6,999,965,000,000,000,000,000,000", "0", "0", "0", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         dataAccountResponse = xCube.getDataAccount(null, targetChainId, dataResponse.getResult().getDataAccountAddr()).send();
@@ -932,8 +932,197 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(344, sendResponse.getError().getCode());
     }
 
+    /**
+     * BondintTx - 본딩 (txCnt : 1, totalTxCnt : 14, fee : 10,000, total fee : 10,016)
+     *
+     * @throws Exception
+     */
     @Test
-    public void test(){
+    @Order(order = 11)
+    public void BondingTxBonding() throws Exception {
+        //위의까지 테스트 결과 Validator Account 잔고 확인
+        AccountBalanceResponse expectedSender = makeAccountBalance(receiver, "4,000,022,000,001,000,000,000,000", "3,999,919,000,000,000,000,000,000", "100,000,000,000,000,000,000", "3,000,001,000,000,000,000", "0", XTOType);
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
+
+        //Account Bonding 확인
+        AccountBondInfoResponse expectedBondingInfo = new AccountBondInfoResponse();
+        expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 100),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                new HashMap<>()
+        ));
+        AccountBondInfoResponse actualBondingInfo = xCube.getBonding(null, targetChainId, receiver, null).send();
+        Assert.assertEquals(expectedBondingInfo.getResult(), actualBondingInfo.getResult());
+
+        //Validator 추가 본딩
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.BondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 10000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxBondingBody())
+                .build();
+        TxSendResponse sendResponse = xCube.bonding(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        //추가 본딩 후 Validator Account 잔고 확인
+        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        expectedSender = makeAccountBalance(receiver, "3,990,023,000,001,400,000,000,000", "3,999,918,000,000,000,000,000,000", "101,000,000,000,000,000,000", "4,000,001,400,000,000,000", "0", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
+
+        //추가 본딩 후 Account Bonding 확인
+        expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 101),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                new HashMap<>()
+        ));
+        actualBondingInfo = xCube.getBonding(null, targetChainId, receiver, XTOType).send();
+        Assert.assertEquals(expectedBondingInfo.getResult(), actualBondingInfo.getResult());
+    }
+
+    @Test
+    @Order(order = 12)
+    public void UnbondingTxCheckValidation() throws Exception {
+        //Sender와 Receiver를 다르게 설정한 경우.
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(validator)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UnbondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        TxSendResponse sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(309, sendResponse.getError().getCode());
+
+        //UnbondingBody의 Amount가 0보다 크지않은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(validator)
+                .withReceiver(validator)
+                .withPayloadType(ApiEnum.PayloadType.UnbondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(new BigInteger("0"))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //UnbondingBody의 Amount가 Bonding한 양보다 큰경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(validator)
+                .withReceiver(validator)
+                .withPayloadType(ApiEnum.PayloadType.UnbondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 8000002))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(403, sendResponse.getError().getCode());
+
+        //Unbonding 하고자 하는 Validator가 존재하지 않는 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UnbondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 100))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(401, sendResponse.getError().getCode());
+
+        //ATX 단위로 언본딩을 하지 않은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UnbondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(XTOType, Long.parseLong("1,000,000,000,000,000,001".replaceAll(",", ""))))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        sendResponse = xCube.bonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(344, sendResponse.getError().getCode());
+    }
+
+    /**
+     * UnbondintTx - unbonding (txCnt : 1, totalTxCnt : 15, fee : 1, total fee : 10,017)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 13)
+    public void UnbondingTxUnbonding() throws Exception {
+        //위의까지 테스트 결과 Validator Account 잔고 확인
+        AccountBalanceResponse expectedSender = makeAccountBalance(receiver, "9,990,016,128,000,000,000,000,000", "1,989,999,000,000,000,000,000,000", "8,000,001,000,000,000,000,000,000", "16,128,000,000,000,000,000", "0", XTOType);
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        System.out.println(actualSender.getBalance());
+//        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
+
+        //Account Bonding 확인
+        AccountBondInfoResponse expectedBondingInfo = new AccountBondInfoResponse();
+        expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 101),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                new HashMap<>()
+        ));
+        AccountBondInfoResponse actualBondingInfo = xCube.getBonding(null, targetChainId, receiver, null).send();
+        Assert.assertEquals(expectedBondingInfo.getResult(), actualBondingInfo.getResult());
+
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UnbondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 10))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        TxSendResponse sendResponse = xCube.unbonding(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        expectedSender = makeAccountBalance(receiver, "10,000,015,136,000,000,995,750,019", "1,989,998,000,000,000,000,000,000", "7,200,001,000,000,000,000,000,000", "9,014,522,525,200,980,550,019", "801,001,613,474,800,015,200,000", XTOType);
+        actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        System.out.println(actualSender.getBalance());
+//        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
+
+        //Account Bonding 확인
+        expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 91),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                null
+        ));
+        actualBondingInfo = xCube.getBonding(null, targetChainId, receiver, null).send();
+        assertEquals(expectedBondingInfo, actualBondingInfo);
+    }
+
+    @Test
+    public void testorder() throws Exception {
+        CommonTx();
+        CommonTxOverTxSize();
+        CommonTxSameSenderAndReceiver();
+        FileTxCheckRegisterValidation();
+        FileTxCheckOrigin();
+        FileTxOverriding();
+        BondingTxCheckValidation();
+        BondingTxBonding();
+//        UnbondingTxCheckValidation();
+//        UnbondingTxUnbonding();
+    }
+
+    @Test
+    @Order(order = 200)
+    public void test() {
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
         System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
     }
