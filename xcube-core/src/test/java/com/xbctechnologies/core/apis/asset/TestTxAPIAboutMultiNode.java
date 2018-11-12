@@ -253,7 +253,9 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
+
         AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,010,000,000,000,000,000,000", "3,999,910,000,000,000,000,000,000", "100,000,000,000,000,000,000", "0", "0", XTOType);
+
         AccountBalanceResponse actualReceiver = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         assertEquals(expectedReceiver.getBalance(), actualReceiver.getBalance());
     }

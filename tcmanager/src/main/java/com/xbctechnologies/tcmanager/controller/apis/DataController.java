@@ -1,10 +1,10 @@
 package com.xbctechnologies.tcmanager.controller.apis;
 
 import com.xbctechnologies.core.apis.dto.res.data.*;
-import com.xbctechnologies.tcmanager.config.XCubeClient;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.CurrencyUtil;
 import com.xbctechnologies.core.utils.ParamUtil;
+import com.xbctechnologies.tcmanager.config.XCubeClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -37,6 +37,12 @@ public class DataController {
     @RequestMapping(value = "/getValidatorList", method = {RequestMethod.POST}, produces = "application/json")
     public ValidatorListResponse getValidatorList(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId) throws TransactionException {
         return xcubeClient.xCube.getValidatorList(null, targetChainId).send();
+    }
+
+    @ApiOperation(value = "Get validator")
+    @RequestMapping(value = "/getValidator", method = {RequestMethod.POST}, produces = "application/json")
+    public ValidatorResponse getValidator(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String validatorAddr) throws TransactionException {
+        return xcubeClient.xCube.getValidator(null, targetChainId, validatorAddr).send();
     }
 
     @ApiOperation(value = "Get simple validator by validator address")

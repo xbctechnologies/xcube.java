@@ -3471,8 +3471,8 @@ public class TestTxAPI extends TestParent {
 //        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
 //        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
 //        System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
-//        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
-//        System.out.println(JsonUtil.generateClassToJson(simpleValidatorResponse.getResult()));
+        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+        System.out.println(JsonUtil.generateClassToJson(simpleValidatorResponse.getResult()));
 //        AccountDataResponse accountDataResponse = xCube.getAccount(null, targetChainId, validator).send();
 //        System.out.println(JsonUtil.generateClassToJson(accountDataResponse.getAccount()));
 //        AccountBondInfoResponse bondInfoResponse = xCube.getBonding(null, targetChainId, sender, null).send();

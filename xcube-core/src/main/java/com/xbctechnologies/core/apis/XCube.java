@@ -16,8 +16,6 @@ import com.xbctechnologies.core.apis.dto.res.node.XChainInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.*;
 import com.xbctechnologies.core.apis.dto.res.validator.ValidatorBondResponse;
 import com.xbctechnologies.core.apis.dto.res.validator.ValidatorSetResponse;
-import com.xbctechnologies.core.apis.dto.res.data.*;
-import com.xbctechnologies.core.apis.dto.res.tx.*;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.Base64Util;
@@ -380,6 +378,16 @@ public class XCube {
                 "data_getValidatorList",
                 Arrays.asList(targetChainId),
                 ValidatorListResponse.class
+        );
+    }
+
+    public Request<?, ValidatorResponse> getValidator(Long reqId, String targetChainId, String validatorAddr) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "data_getValidator",
+                Arrays.asList(targetChainId, validatorAddr),
+                ValidatorResponse.class
         );
     }
 
