@@ -59,7 +59,7 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Official2 golang implementation of the XBlockchain.")
+                .title("Official golang implementation of the XBlockchain.")
                 .version("1.0")
                 .build();
     }
