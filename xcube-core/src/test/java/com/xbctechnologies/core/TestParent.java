@@ -3,9 +3,7 @@ package com.xbctechnologies.core;
 import com.xbctechnologies.core.apis.TestXCube;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
-import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
-import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
-import com.xbctechnologies.core.apis.dto.res.data.TotalAtxResponse;
+import com.xbctechnologies.core.apis.dto.res.data.*;
 import com.xbctechnologies.core.apis.dto.xtypes.TxGRProposalBody;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
@@ -18,10 +16,7 @@ import org.junit.Before;
 
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.*;
 import static org.junit.Assert.assertEquals;
@@ -130,6 +125,68 @@ public class TestParent {
         accountBalance.setResult(accountBalanceResult);
 
         return accountBalance;
+    }
+
+    public void accumulateRewardOfValidator(AccountBalanceResponse accountBalanceResponse, String validator, AccountBalanceResponse actualSender) {
+        ValidatorResponse validatorResponse = xCube.getValidator(null, targetChainId, validator).send();
+        if (validatorResponse.getValidator() == null) {
+            return;
+        }
+
+        BigInteger totalBlockReward = new BigInteger("0");
+        if (validatorResponse.getValidator().getRewardBlocks() != null) {
+            ValidatorListResponse.Result.Delegator delegator = null;
+            Iterator<String> iter = validatorResponse.getValidator().getDelegatorMap().keySet().iterator();
+            while (iter.hasNext()) {
+                String tempVal = iter.next();
+                if (tempVal.equals(validator)) {
+                    delegator = validatorResponse.getValidator().getDelegatorMap().get(tempVal);
+                }
+            }
+
+            for (ValidatorListResponse.Result.Bonding bonding : delegator.getBondingList()) {
+                for (ValidatorListResponse.Result.Reward reward : validatorResponse.getValidator().getRewardBlocks()) {
+                    long rewardBlockCnt = 0;
+
+                    if (bonding.getBlockNo() < reward.getStartBlockNo()) {
+                        rewardBlockCnt = (reward.getEndBlockNo() - reward.getStartBlockNo()) + 1;
+                    } else if (bonding.getBlockNo() >= reward.getStartBlockNo() && bonding.getBlockNo() <= reward.getEndBlockNo()) {
+                        rewardBlockCnt = (reward.getEndBlockNo() - bonding.getBlockNo()) + 1;
+                    } else {
+                        break;
+                    }
+
+                    totalBlockReward = totalBlockReward.add(reward.getRewardPerCoin().multiply(new BigInteger(String.valueOf(rewardBlockCnt))).multiply(CurrencyUtil.generateCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, bonding.getBondingBalance())));
+                }
+            }
+        }
+
+        BigInteger totalReward = new BigInteger("0").add(totalBlockReward).add(validatorResponse.getValidator().getRewardAmountFee());
+
+        accountBalanceResponse.getBalance().setTotalBalance(accountBalanceResponse.getBalance().getTotalBalance().add(totalReward));
+        accountBalanceResponse.getBalance().setPredictionRewardBalance(accountBalanceResponse.getBalance().getPredictionRewardBalance().add(totalReward));
+
+        if (actualSender != null) {
+            accountBalanceResponse.getBalance().setTotalBalance(accountBalanceResponse.getBalance().getTotalBalance().add(actualSender.getBalance().getLockingBalance()));
+            accountBalanceResponse.getBalance().setLockingBalance(actualSender.getBalance().getLockingBalance());
+        }
+    }
+
+    public BigInteger findLowestAmount(BigInteger amount) {
+        BigInteger result = new BigInteger("0");
+
+        String amountStr = amount.toString();
+        int cnt = 1;
+        for (int i = amountStr.length() - 1; i >= 0; i--) {
+            int val = Character.getNumericValue(amountStr.charAt(i));
+            if (val > 0) {
+                result = result.add(new BigInteger(String.valueOf(val))).multiply(new BigInteger(String.valueOf(cnt)));
+                break;
+            }
+            cnt *= 10;
+        }
+
+        return result;
     }
 
     public ProgressGovernance.Result makeProgressGR() {

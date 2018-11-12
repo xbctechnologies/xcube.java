@@ -1603,24 +1603,6 @@ public class TestTxAPI extends TestParent {
         assertNotNull(sendResponse.getError());
         Assert.assertEquals(1, sendResponse.getError().getCode());
 
-        //Validator와 Delegator의 보상비율을 지정한 경우 합이 100이 안되는 경우.
-        txRequest = makeDefaultBuilder()
-                .withSender(validator)
-                .withReceiver(validator)
-                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
-                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
-                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-                .withPayloadBody(
-                        grpBuilder
-                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(0, 1))
-                                .build()
-                )
-                .build();
-
-        sendResponse = xCube.sendTransaction(txRequest).send();
-        assertNotNull(sendResponse.getError());
-        Assert.assertEquals(1, sendResponse.getError().getCode());
-
         //Int64로 정의된 필드들의 값이 Int32의 Max 값보다 큰경우. (2147483647)
         txRequest = makeDefaultBuilder()
                 .withSender(validator)

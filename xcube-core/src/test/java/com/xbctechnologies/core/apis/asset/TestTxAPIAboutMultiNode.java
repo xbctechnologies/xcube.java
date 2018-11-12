@@ -4,16 +4,13 @@ import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
 import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
-import com.xbctechnologies.core.apis.dto.res.data.DataAccountResponse;
-import com.xbctechnologies.core.apis.dto.res.data.ValidatorListResponse;
+import com.xbctechnologies.core.apis.dto.res.data.*;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
-import com.xbctechnologies.core.apis.dto.xtypes.TxBondingBody;
-import com.xbctechnologies.core.apis.dto.xtypes.TxCommonBody;
-import com.xbctechnologies.core.apis.dto.xtypes.TxFileBody;
-import com.xbctechnologies.core.apis.dto.xtypes.TxUnbondingBody;
+import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
 import com.xbctechnologies.core.order.Order;
@@ -29,10 +26,7 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.CoinType;
 import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.XTOType;
@@ -58,6 +52,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     @Before
     public void init() {
         String etherHost = "106.251.231.226:7120";
+//        String etherHost = "localhost:7979";
         xCube = new XCube(new RestHttpClient(
                 RestHttpConfig.builder()
                         .withXNodeUrl(String.format("http://%s", etherHost))
@@ -253,9 +248,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
-
         AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,010,000,000,000,000,000,000", "3,999,910,000,000,000,000,000,000", "100,000,000,000,000,000,000", "0", "0", XTOType);
-
+        accumulateRewardOfValidator(expectedReceiver, receiver, null);
         AccountBalanceResponse actualReceiver = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         assertEquals(expectedReceiver.getBalance(), actualReceiver.getBalance());
     }
@@ -291,7 +285,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
-        AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,020,250,000,100,000,000,000", "3,999,920,000,000,000,000,000,000", "100,000,000,000,000,000,000", "250,000,100,000,000,000", "0", XTOType);
+        AccountBalanceResponse expectedReceiver = makeAccountBalance(receiver, "4,000,020,000,000,000,000,000,000", "3,999,920,000,000,000,000,000,000", "100,000,000,000,000,000,000", "0", "0", XTOType);
+        accumulateRewardOfValidator(expectedReceiver, receiver, null);
         AccountBalanceResponse actualReceiver = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         assertEquals(expectedReceiver.getBalance(), actualReceiver.getBalance());
     }
@@ -565,7 +560,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         originSendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(originSendResponse.getError());
 
-        expectedSender = makeAccountBalance(receiver, "4,000,021,000,000,500,000,000,000", "3,999,919,000,000,000,000,000,000", "100,000,000,000,000,000,000", "2,000,000,500,000,000,000", "0", XTOType);
+        expectedSender = makeAccountBalance(receiver, "4,000,019,000,000,000,000,000,000", "3,999,919,000,000,000,000,000,000", "100,000,000,000,000,000,000", "0", "0", XTOType);
+        accumulateRewardOfValidator(expectedSender, receiver, null);
         actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
@@ -942,11 +938,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     @Test
     @Order(order = 11)
     public void BondingTxBonding() throws Exception {
-        //위의까지 테스트 결과 Validator Account 잔고 확인
-        AccountBalanceResponse expectedSender = makeAccountBalance(receiver, "4,000,022,000,001,000,000,000,000", "3,999,919,000,000,000,000,000,000", "100,000,000,000,000,000,000", "3,000,001,000,000,000,000", "0", XTOType);
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
-        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
-
         //Account Bonding 확인
         AccountBondInfoResponse expectedBondingInfo = new AccountBondInfoResponse();
         expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
@@ -969,12 +960,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
                 .build();
         TxSendResponse sendResponse = xCube.bonding(txRequest).send();
         assertNull(sendResponse.getError());
-
-        //추가 본딩 후 Validator Account 잔고 확인
-        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
-        expectedSender = makeAccountBalance(receiver, "3,990,023,000,001,400,000,000,000", "3,999,918,000,000,000,000,000,000", "101,000,000,000,000,000,000", "4,000,001,400,000,000,000", "0", XTOType);
-        actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
-        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
 
         //추가 본딩 후 Account Bonding 확인
         expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
@@ -1018,8 +1003,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         //UnbondingBody의 Amount가 Bonding한 양보다 큰경우.
         txRequest = makeDefaultBuilder()
-                .withSender(validator)
-                .withReceiver(validator)
+                .withSender(receiver)
+                .withReceiver(receiver)
                 .withPayloadType(ApiEnum.PayloadType.UnbondingType)
                 .withFee(CurrencyUtil.generateXTO(CoinType, 1))
                 .withAmount(CurrencyUtil.generateXTO(CoinType, 8000002))
@@ -1031,8 +1016,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         //Unbonding 하고자 하는 Validator가 존재하지 않는 경우.
         txRequest = makeDefaultBuilder()
-                .withSender(receiver)
-                .withReceiver(receiver)
+                .withSender(sender)
+                .withReceiver(sender)
                 .withPayloadType(ApiEnum.PayloadType.UnbondingType)
                 .withFee(CurrencyUtil.generateXTO(CoinType, 1))
                 .withAmount(CurrencyUtil.generateXTO(CoinType, 100))
@@ -1064,12 +1049,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     @Test
     @Order(order = 13)
     public void UnbondingTxUnbonding() throws Exception {
-        //위의까지 테스트 결과 Validator Account 잔고 확인
-        AccountBalanceResponse expectedSender = makeAccountBalance(receiver, "9,990,016,128,000,000,000,000,000", "1,989,999,000,000,000,000,000,000", "8,000,001,000,000,000,000,000,000", "16,128,000,000,000,000,000", "0", XTOType);
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
-        System.out.println(actualSender.getBalance());
-//        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
-
         //Account Bonding 확인
         AccountBondInfoResponse expectedBondingInfo = new AccountBondInfoResponse();
         expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
@@ -1092,11 +1071,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         TxSendResponse sendResponse = xCube.unbonding(txRequest).send();
         assertNull(sendResponse.getError());
 
-        expectedSender = makeAccountBalance(receiver, "10,000,015,136,000,000,995,750,019", "1,989,998,000,000,000,000,000,000", "7,200,001,000,000,000,000,000,000", "9,014,522,525,200,980,550,019", "801,001,613,474,800,015,200,000", XTOType);
-        actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
-        System.out.println(actualSender.getBalance());
-//        assertEquals(expectedSender.getBalance(), actualSender.getBalance());
-
         //Account Bonding 확인
         expectedBondingInfo.setResult(new AccountBondInfoResponse.Result(
                 CurrencyUtil.generateXTO(CoinType, 91),
@@ -1109,17 +1083,718 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     }
 
     @Test
+    @Order(order = 14)
+    public void UnbondingTxCheckValidationOfLockBalance() throws Exception {
+        //AvailableBalance + LockingBalance를 합친 Fee를 설정한 경우 사용 불가능하도록 되는지 체크
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 3990008))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 10))
+                .withPayloadBody(new TxCommonBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(201, sendResponse.getError().getCode());
+    }
+
+    /**
+     * UnbondintTx - common (txCnt : 2, totalTxCnt : 17, fee : 2,000,001, total fee : 2,010,018)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 15)
+    public void UnbondingTxUseLockingBalance() throws Exception {
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        actualSender.getBalance().setTotalBalance(actualSender.getBalance().getTotalBalance().subtract(CurrencyUtil.generateXTO(CoinType, 1)));
+        actualSender.getBalance().setAvailableBalance(actualSender.getBalance().getAvailableBalance().subtract(CurrencyUtil.generateXTO(CoinType, 1)));
+
+        BigInteger useAmount = actualSender.getBalance().getAvailableBalance().add(findLowestAmount(actualSender.getBalance().getLockingBalance()));
+        //아래 트랜잭션이 포함되는 블록No = 18
+        //테스트 진행을 위해 Locking BlockNo를 위의 unbonding  blockNo + 1로 주었다. (블록No 증가를 위해 하나의 Tx를 발생)
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxCommonBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        //Locking BlockNo에 도달했을때 실제 사용이 가능해지는지 테스트
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(useAmount)
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxCommonBody())
+                .build();
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(sendResponse.getError());
+    }
+
+    @Test
+    @Order(order = 16)
+    public void DelegatingTxCheckValidation() throws Exception {
+        //DelegatingBody의 amount 값을 0보다 작게 설정한 경우.
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.DelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(new BigInteger("0"))
+                .withPayloadBody(new TxDelegatingBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.delegating(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //Delegating하고자 하는 Validator가 존재하지 않는 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(validator)
+                .withPayloadType(ApiEnum.PayloadType.DelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxDelegatingBody())
+                .build();
+
+        sendResponse = xCube.delegating(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(401, sendResponse.getError().getCode());
+
+        //Delegating시 Balance보다 크게 위임하고자 하는 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.DelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 6999965))
+                .withPayloadBody(new TxDelegatingBody())
+                .build();
+
+        sendResponse = xCube.delegating(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(201, sendResponse.getError().getCode());
+
+        //ATX 단위로 위임을 하지 않은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.DelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(XTOType, Long.parseLong("1,000,000,000,000,000,001".replaceAll(",", ""))))
+                .withPayloadBody(new TxDelegatingBody())
+                .build();
+        sendResponse = xCube.bonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(344, sendResponse.getError().getCode());
+    }
+
+    /**
+     * DelegatingTx - delegating (txCnt : 1, totalTxCnt : 18, fee : 1, total fee : 2,010,019)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 17)
+    public void DelegatingTxDelegating() throws Exception {
+        //Validator Bonding 확인
+        AccountBondInfoResponse expectedBondingInfoOfValidator = new AccountBondInfoResponse();
+        expectedBondingInfoOfValidator.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 91),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                new HashMap<>()
+        ));
+        AccountBondInfoResponse actualBondingInfoOfValidator = xCube.getBonding(null, targetChainId, receiver, null).send();
+        assertEquals(expectedBondingInfoOfValidator.getBonding(), actualBondingInfoOfValidator.getBonding());
+
+        //Delegator Bonding 확인
+        AccountBondInfoResponse expectedBondingInfoOfDelegator = new AccountBondInfoResponse();
+        expectedBondingInfoOfDelegator.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                new HashMap<>()
+        ));
+        AccountBondInfoResponse actualBondingInfoOfDelegator = xCube.getBonding(null, targetChainId, sender, null).send();
+        assertEquals(expectedBondingInfoOfDelegator.getBonding(), actualBondingInfoOfDelegator.getBonding());
+
+        BigInteger delegatingAmount = CurrencyUtil.generateXTO(CoinType, 99);
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.DelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(delegatingAmount)
+                .withPayloadBody(new TxDelegatingBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.delegating(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        //Validator Bonding 확인
+        expectedBondingInfoOfValidator = new AccountBondInfoResponse();
+        expectedBondingInfoOfValidator.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 91),
+                CurrencyUtil.generateXTO(CoinType, 99),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                new HashMap<>()
+        ));
+        actualBondingInfoOfValidator = xCube.getBonding(null, targetChainId, receiver, null).send();
+        assertEquals(expectedBondingInfoOfValidator.getBonding(), actualBondingInfoOfValidator.getBonding());
+
+        //Validator List에 위임한 List 정보가 있는지 확인
+        ValidatorListResponse actualValidator = xCube.getValidatorList(null, targetChainId).send();
+        boolean checked = false;
+        for (ValidatorListResponse.Result result : actualValidator.getResult()) {
+            if (result.getValidatorAccountAddr().equals(receiver)) {
+                ValidatorListResponse.Result.Delegator delegator = result.getDelegatorMap().get(sender);
+                if (delegator != null && delegator.getTotalBondingBalance().compareTo(delegatingAmount) == 0) {
+                    checked = true;
+                }
+            }
+        }
+        assertEquals(checked, true);
+
+        //Delegator Bonding 확인
+        expectedBondingInfoOfDelegator = new AccountBondInfoResponse();
+        Map<String, BigInteger> delegatingHistory = new HashMap<>();
+        delegatingHistory.put(receiver, CurrencyUtil.generateXTO(CoinType, 99));
+        expectedBondingInfoOfDelegator.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 99),
+                delegatingHistory
+        ));
+        actualBondingInfoOfDelegator = xCube.getBonding(null, targetChainId, sender, null).send();
+        assertEquals(expectedBondingInfoOfDelegator.getBonding(), actualBondingInfoOfDelegator.getBonding());
+    }
+
+    /**
+     * DelegatingTx - delegating (txCnt : 1, totalTxCnt : 19, fee : 1, total fee : 2,010,020)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 18)
+    public void DelegatingTxDelegatingToSelf() throws Exception {
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.DelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxDelegatingBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.delegating(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        //Validator Bonding 확인
+        AccountBondInfoResponse expectedBondingInfoOfValidator = new AccountBondInfoResponse();
+        expectedBondingInfoOfValidator.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 92),
+                CurrencyUtil.generateXTO(CoinType, 99),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                new HashMap<>()
+        ));
+        AccountBondInfoResponse actualBondingInfoOfValidator = xCube.getBonding(null, targetChainId, receiver, null).send();
+        assertEquals(expectedBondingInfoOfValidator.getBonding(), actualBondingInfoOfValidator.getBonding());
+    }
+
+    @Test
+    @Order(order = 19)
+    public void UndelegatingTxCheckValidation() throws Exception {
+        //UndelegatingBody의 amount 값을 0보다 작게 설정한 경우.
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxUndelegatingBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.undelegating(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //Undelegating하고자 하는 Validator가 존재하지 않는 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(validator)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 10))
+                .withPayloadBody(new TxUndelegatingBody())
+                .build();
+
+        sendResponse = xCube.undelegating(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(401, sendResponse.getError().getCode());
+
+        //Undelegating하고자 하는 Validator에 Delegating 이력이 없는 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(validator)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 10))
+                .withPayloadBody(new TxUndelegatingBody())
+                .build();
+
+        sendResponse = xCube.undelegating(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(402, sendResponse.getError().getCode());
+
+        //Undelegating시 Delegating한 지분 값보다 크게 설정한 경우.
+        AccountBondInfoResponse bondInfoResponse = xCube.getBonding(null, targetChainId, sender, null).send();
+        BigInteger delegatingAmount = CurrencyUtil.generateCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, bondInfoResponse.getBonding().getDelegating());
+        delegatingAmount = delegatingAmount.add(new BigInteger("1"));
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, delegatingAmount))
+                .withPayloadBody(new TxUndelegatingBody())
+                .build();
+
+        sendResponse = xCube.undelegating(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(403, sendResponse.getError().getCode());
+
+        //ATX 단위로 위임 취소를 하지 않은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(XTOType, Long.parseLong("1,000,000,000,000,000,001".replaceAll(",", ""))))
+                .withPayloadBody(new TxUndelegatingBody())
+                .build();
+        sendResponse = xCube.bonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(344, sendResponse.getError().getCode());
+    }
+
+    /**
+     * UndelegatingTx - delegating (txCnt : 1, totalTxCnt : 20, fee : 1, total fee : 2,010,021)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 20)
+    public void UndelegatingTxUndelegating() throws Exception {
+        //Validator List 확인
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 9))
+                .withPayloadBody(new TxUndelegatingBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.undelegating(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        //Delegator Bonding 확인
+        AccountBondInfoResponse expectedDelegatorBondingInfo = new AccountBondInfoResponse();
+        Map<String, BigInteger> delegatingHistory = new HashMap<>();
+        delegatingHistory.put(receiver, CurrencyUtil.generateXTO(CoinType, 90));
+        expectedDelegatorBondingInfo.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                CurrencyUtil.generateXTO(CoinType, 90),
+                delegatingHistory
+        ));
+        AccountBondInfoResponse delegatorBondInfoResponse = xCube.getBonding(null, targetChainId, sender, null).send();
+        assertEquals(expectedDelegatorBondingInfo.getBonding(), delegatorBondInfoResponse.getBonding());
+    }
+
+    /**
+     * UndelegatingTx - delegating (txCnt : 1, totalTxCnt : 21, fee : 1, total fee : 2,010,022)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 21)
+    public void UndelegatingTxUndelegatingOfValidator() throws Exception {
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxUndelegatingBody())
+                .build();
+
+        TxSendResponse sendResponse = xCube.undelegating(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        //Validator Bonding 확인
+        AccountBondInfoResponse expectedValidatorBondingInfo = new AccountBondInfoResponse();
+        Map<String, BigInteger> delegatingHistory = new HashMap<>();
+        expectedValidatorBondingInfo.setResult(new AccountBondInfoResponse.Result(
+                CurrencyUtil.generateXTO(CoinType, 91),
+                CurrencyUtil.generateXTO(CoinType, 90),
+                CurrencyUtil.generateXTO(CoinType, 0),
+                delegatingHistory
+        ));
+        AccountBondInfoResponse validatorBondInfoResponse = xCube.getBonding(null, targetChainId, receiver, null).send();
+        assertEquals(expectedValidatorBondingInfo.getBonding(), validatorBondInfoResponse.getBonding());
+    }
+
+    /**
+     * GRProposalTx - 유효성 체크
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 22)
+    public void GRProposalTxCheckValidation() throws Exception {
+        TxGRProposalBody.Builder grpBuilder = TxGRProposalBody.builder();
+
+        //Tx Fee를 100ATX 이하로 설정한 경우.
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(grpBuilder.build())
+                .build();
+
+        TxSendResponse sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //Tx의 Amount를 0보다 크게 설정한 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(grpBuilder.withCurrentReflection(new TxGRProposalBody.CurrentReflection(1, 5)).build())
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(307, sendResponse.getError().getCode());
+
+        //Sender와 Receiver가 다른 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(validator)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(grpBuilder.build())
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(309, sendResponse.getError().getCode());
+
+        //GR 제안시 투표가능한 기간(블록No)이 0보다 작은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(grpBuilder.withCurrentReflection(new TxGRProposalBody.CurrentReflection(-1, 0)).build())
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //GR이 가결된 경우 적용해야 할 블록No 값이 0보다 작은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(grpBuilder.withCurrentReflection(new TxGRProposalBody.CurrentReflection(0, -1)).build())
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //Int64로 정의된 필드들의 값이 Int32의 Max 값보다 큰경우. (2147483647)
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        grpBuilder
+                                .withMinBlockNumsToGRProposal(2147483648l)
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(0, 1))
+                                .build()
+                )
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //현재 적용중인 GR의 최대 가능한 투표가능 기간 값보다 현재 제안 하려는 GR에 적용하는 투표가능 기간이 큰 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(1728001, 1))
+                                .build()
+                )
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //제안 하려는 GR이 가결된 후 적용되어야 하는 값이 현재 적용중인 GR의 가결된 후 GR을 적용하고자 하는 최소 및 최대 적용 값 사이로 설정되지 않은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(1728000, 1))
+                                .build()
+                )
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //제안자가 Validator가 아닌 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(2, 3))
+                                .build()
+                )
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(401, sendResponse.getError().getCode());
+
+        //GR 적용 최대가능 기간이 투표가능 최대기간 보다 작거나 같은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withMaxBlockNumsForVoting(5)
+                                .withMaxBlockNumsUtilReflection(5)
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(2, 3))
+                                .build()
+                )
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //제안자(Validator)가 제안조건(제안을 하기 위한 연속된 블록합의 수)을 충족하지 못한경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(2, 3))
+                                .build()
+                )
+                .build();
+
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(319, sendResponse.getError().getCode());
+    }
+
+    /**
+     * GRProposalTx - grproposal (txCnt : 2, totalTxCnt : 23, fee : 101, total fee : 2,010,123)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 23)
+    public void GRProposalTxGRProposal() throws Exception {
+        //GR 제안을 할 수 있는 제안블록 수 충족을 위한 블록 증가.
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(receiver)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxCommonBody())
+                .build();
+
+        TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+        assertNotNull(txSendResponse.getResult());
+
+
+        String grProposer = null;
+        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
+        for (SimpleValidatorResponse.Result result : simpleValidatorsResponse.getResult()) {
+            if ((result.getEndBlockNo() - result.getStartBlockNo()) >= 23) {
+                grProposer = result.getValidatorAccountAddr();
+            }
+        }
+
+        //투표 기간 값보다 가결시 적용해야 할 기간이 더 작은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(4, 3))
+                                .build()
+                )
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(txSendResponse.getError());
+        Assert.assertEquals(1, txSendResponse.getError().getCode());
+
+        //GR 제안 - 전체 필드변경.
+        Map<String, BigInteger> stakeMap = new HashMap<>();
+        stakeMap.put(grProposer, CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 100));
+
+
+        ProgressGovernance.Result expectedGR = new ProgressGovernance.Result();
+        expectedGR.setExpectedGRVersion(2);
+        expectedGR.setStake(stakeMap);
+        expectedGR.setAgreeRate(0);
+        expectedGR.setDisagreeRate(0);
+        expectedGR.setPass(false);
+        expectedGR.setCurrentBlockNo(startCurrentBlockNo++);
+        expectedGR.setEndOfVotingBlockNo(startEndOfVotingBlockNo++);
+        expectedGR.setReflectionBlockNo(startReflectionBlockNo++);
+
+        expectedGR.setRewardXtoPerCoin(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 100));
+        expectedGR.setMinCommonTxFee(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 9));
+        expectedGR.setMinBondingTxFee(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 9999));
+        expectedGR.setMinGRProposalTxFee(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 99));
+        expectedGR.setMinGRVoteTxFee(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1));
+        expectedGR.setMinXTxFee(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 999));
+        expectedGR.setMaxBlockNumsForVoting(49);
+        expectedGR.setMinBlockNumsToGRProposal(20);
+        expectedGR.setMinBlockNumsUtilReflection(1);
+        expectedGR.setMaxBlockNumsUtilReflection(50);
+        expectedGR.setBlockNumsFreezingValidator(200);
+        expectedGR.setBlockNumsUtilUnbonded(10);
+        expectedGR.setMaxDelegatableValidatorNums(30);
+        expectedGR.setValidatorNums(30);
+        expectedGR.setFirstCompatibleVersion("1.0.1-stable");
+        expectedGR.setCurrentReflection(new TxGRProposalBody.CurrentReflection(2, 3));
+
+        txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withRewardXtoPerCoin(expectedGR.getRewardXtoPerCoin())
+                                .withMinCommonTxFee(expectedGR.getMinCommonTxFee())
+                                .withMinBondingTxFee(expectedGR.getMinBondingTxFee())
+                                .withMinGRProposalTxFee(expectedGR.getMinGRProposalTxFee())
+                                .withMinGRVoteTxFee(expectedGR.getMinGRVoteTxFee())
+                                .withMinXTxFee(expectedGR.getMinXTxFee())
+                                .withMaxBlockNumsForVoting(expectedGR.getMaxBlockNumsForVoting())
+                                .withMinBlockNumsToGRProposal(expectedGR.getMinBlockNumsToGRProposal())
+                                .withMinBlockNumsUtilReflection(expectedGR.getMinBlockNumsUtilReflection())
+                                .withMaxBlockNumsUtilReflection(expectedGR.getMaxBlockNumsUtilReflection())
+                                .withBlockNumsFreezingValidator(expectedGR.getBlockNumsFreezingValidator())
+                                .withBlockNumsUtilUnbonded(expectedGR.getBlockNumsUtilUnbonded())
+                                .withMaxDelegatableValidatorNums(expectedGR.getMaxDelegatableValidatorNums())
+                                .withValidatorNums(expectedGR.getValidatorNums())
+                                .withFirstCompatibleVersion(expectedGR.getFirstCompatibleVersion())
+                                .withCurrentReflection(expectedGR.getCurrentReflection())
+                                .build()
+                )
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        ProgressGovernance actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+        expectedGR.setStake(null);
+        actualGR.getGR().setStake(null);
+        assertEquals(expectedGR, actualGR.getGR());
+
+        //다음 GR을 테스트하기 위해 삭제
+        BoolResponse boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        assertNull(boolResponse.getError());
+    }
+
+    @Test
     public void testorder() throws Exception {
+        CheckValidationCommonFields();
+        CommonTxCheckValidation();
         CommonTx();
         CommonTxOverTxSize();
         CommonTxSameSenderAndReceiver();
+        FileTxCheckValidation();
         FileTxCheckRegisterValidation();
         FileTxCheckOrigin();
         FileTxOverriding();
         BondingTxCheckValidation();
         BondingTxBonding();
-//        UnbondingTxCheckValidation();
-//        UnbondingTxUnbonding();
+        UnbondingTxCheckValidation();
+        UnbondingTxUnbonding();
+        UnbondingTxCheckValidationOfLockBalance();
+        UnbondingTxUseLockingBalance();
+        DelegatingTxCheckValidation();
+        DelegatingTxDelegating();
+        DelegatingTxDelegatingToSelf();
+        UndelegatingTxCheckValidation();
+        UndelegatingTxUndelegating();
+        UndelegatingTxUndelegatingOfValidator();
+        GRProposalTxCheckValidation();
+        GRProposalTxGRProposal();
     }
 
     @Test
@@ -1127,5 +1802,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     public void test() {
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
         System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
+
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
     }
 }
