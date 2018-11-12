@@ -33,7 +33,7 @@ public class SwaggerConfig {
                 .ignoredParameterTypes(ApiIgnore.class, JsonIgnore.class)
                 .enable(true)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("kr.co.xblocksystems.tcmanager"))
+                .apis(RequestHandlerSelectors.basePackage("com.xbctechnologies.tcmanager"))
                 .paths(PathSelectors.any())
                 .build();
     }
