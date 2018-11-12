@@ -51,7 +51,7 @@ bintray {
     key = "${bintrayKey}"
     publish = "${bintrayPublish}"
     override = "${bintrayPublish}"
-    publications = ['mavenPublication']
+    publications = ['myPublication']
 
     pkg {
         repo = 'com.xbctechnologies'  //bintray에 생성한 Repository 이름
@@ -61,6 +61,7 @@ bintray {
 
         version {
             name = "${project.version}"
+            released = new Date()
             gpg {
                 sign = true
                 passphrase = "${bintrayPass}"
@@ -80,19 +81,28 @@ artifacts {
 
 publishing {
     publications {
-        mavenPublication(MavenPublication) {
-            artifact sourcesJar {
-                classifier ""
-            }
-            groupId "${project.group}"
-            artifactId "${project.jar.baseName}"
-            version "${project.version}"
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'Java core library of xblockchain')
-                root.appendNode('name', 'XCube core')
-                root.appendNode('url', 'https://github.com/xbctechnologies/xcube.java')
-                root.children().last() + project.ext.pomConfig
+        myPublication(MavenPublication) {
+            pom {
+                name = 'XCube core'
+                description = 'Java core library of xblockchain'
+                url = 'https://github.com/xbctechnologies/xcube.java'
+                scm {
+                    url = "http://106.251.231.226:2033/xchain-dev/xcube.java"
+                }
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Alex'
+                        name = 'Alex Jeon'
+                        email = 'alex@xblocksys.com'
+                    }
+                }
             }
         }
     }

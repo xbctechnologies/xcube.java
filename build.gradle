@@ -1,6 +1,6 @@
 subprojects {
     group 'com.xbctechnologies'
-    version '1.0.0'
+    version '0.0.1'
 
     apply plugin: 'java'
     sourceCompatibility = 1.8
@@ -9,30 +9,12 @@ subprojects {
         mavenCentral()
     }
 
-    buildscript {
-        ext {
-            pomConfig = {
-                licenses {
-                    license {
-                        name "The Apache Software License, Version 2.0"
-                        url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                        distribution "repo"
-                    }
-                }
-
-                scm {
-                    url "http://106.251.231.226:2033/xchain-dev/xcube.java"
-                }
-            }
-        }
-    }
-
     dependencies {
         def slf4jVersion = '1.7.25'
 
         testCompile "junit:junit:4.12"
         testCompile 'org.hamcrest:hamcrest-library:1.3'
         compile "org.slf4j:slf4j-api:$slf4jVersion"
-        compile "org.projectlombok:lombok:1.18.0"
+        compile "org.projectlombok:lombok:1.18.4"
     }
 }
