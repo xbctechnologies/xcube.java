@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @Slf4j
 @EnableCaching(proxyTargetClass = true)
-@SpringBootApplication(scanBasePackages = {"kr.co.xblocksystems.tcmanager"})
+@SpringBootApplication(scanBasePackages = {"com.xbctechnologies.tcmanager"})
 public class TCMangerMain {
     public static void main(String[] args) {
         SpringApplication.run(TCMangerMain.class, args);
