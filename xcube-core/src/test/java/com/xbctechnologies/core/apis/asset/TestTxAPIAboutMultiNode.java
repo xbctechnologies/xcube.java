@@ -75,11 +75,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         }
     }
 
-    /**
-     * 공통 - 유효성 체크
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 1)
     public void CheckValidationCommonFields() throws Exception {
@@ -175,26 +170,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         txSendResponse = xCube.sendTransaction(txRequest).send();
         assertNotNull(txSendResponse.getError());
         Assert.assertEquals(323, txSendResponse.getError().getCode());
-
-
-        //정의되지 않은 PayloadType 설정
-        /*txRequest = makeDefaultBuilder()
-                .withSender(sender)
-                .withReceiver(receiver)
-                .withPayloadType(CommonType)
-                .withFee(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 1))
-                .withAmount(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.CoinType, 10))
-                .withPayloadBody(new TxBondingBody(new BigInteger("100")))
-                .build();
-        txSendResponse = xCube.sendTransaction(txRequest).send();
-        assertNull(txSendResponse.getError());*/
     }
 
-    /**
-     * CommonTx - 유효성 체크
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 2)
     public void CommonTxCheckValidation() throws Exception {
@@ -230,11 +207,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(1, txSendResponse.getError().getCode());
     }
 
-    /**
-     * CommonTx - Sender가 Receiver에게 Amount 만큼의 코인을 전송 (txCnt : 1, totalTxCnt : 1, fee : 1, total fee : 1)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 3)
     public void CommonTx() throws Exception {
@@ -267,11 +239,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedReceiver.getBalance(), actualReceiver.getBalance());
     }
 
-    /**
-     * CommonTx - Sender가 Input 데이터를 3KB로 설정. (txCnt : 1, totalTxCnt : 2, fee : 3, total fee : 4)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 4)
     public void CommonTxOverTxSize() throws Exception {
@@ -304,11 +271,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedReceiver.getBalance(), actualReceiver.getBalance());
     }
 
-    /**
-     * CommonTx - Sender와 Receiver가 같도록 설정 (txCnt : 1, totalTxCnt : 3, fee : 2, total fee : 6)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 5)
     public void CommonTxSameSenderAndReceiver() throws Exception {
@@ -330,11 +292,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedSender.getBalance(), actualSender.getBalance());
     }
 
-    /**
-     * FileTx - 유효성 체크
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 6)
     public void FileTxCheckValidation() throws Exception {
@@ -472,11 +429,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(1, originSendResponse.getError().getCode());
     }
 
-    /**
-     * FileTx - 유효성 체크 (txCnt : 4, totalTxCnt : 7, fee : 4, total fee : 10)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 7)
     public void FileTxCheckRegisterValidation() throws Exception {
@@ -618,11 +570,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(328, originSendResponse.getError().getCode());
     }
 
-    /**
-     * FileTx - 원본체크 (txCnt : 1, totalTxCnt : 8, fee : 1, total fee : 11)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 8)
     public void FileTxCheckOrigin() throws Exception {
@@ -670,11 +617,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(334, checkOriginal.getError().getCode());
     }
 
-    /**
-     * FileTx - File 오버라이딩 (txCnt : 5, totalTxCnt : 13, fee : 5, total fee : 16)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 9)
     public void FileTxOverriding() throws Exception {
@@ -869,11 +811,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertNotEquals(expectedDataAccount.getDataHash(), dataAccountResponse.getResult().getDataHash());
     }
 
-    /**
-     * BondingTx - 유효성 체크
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 10)
     public void BondingTxCheckValidation() throws Exception {
@@ -943,11 +880,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(344, sendResponse.getError().getCode());
     }
 
-    /**
-     * BondintTx - 본딩 (txCnt : 1, totalTxCnt : 14, fee : 10,000, total fee : 10,016)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 11)
     public void BondingTxBonding() throws Exception {
@@ -1054,11 +986,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(344, sendResponse.getError().getCode());
     }
 
-    /**
-     * UnbondintTx - unbonding (txCnt : 1, totalTxCnt : 15, fee : 1, total fee : 10,017)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 13)
     public void UnbondingTxUnbonding() throws Exception {
@@ -1113,11 +1040,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(201, sendResponse.getError().getCode());
     }
 
-    /**
-     * UnbondintTx - common (txCnt : 2, totalTxCnt : 17, fee : 2,000,001, total fee : 2,010,018)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 15)
     public void UnbondingTxUseLockingBalance() throws Exception {
@@ -1212,11 +1134,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(344, sendResponse.getError().getCode());
     }
 
-    /**
-     * DelegatingTx - delegating (txCnt : 1, totalTxCnt : 18, fee : 1, total fee : 2,010,019)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 17)
     public void DelegatingTxDelegating() throws Exception {
@@ -1293,11 +1210,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedBondingInfoOfDelegator.getBonding(), actualBondingInfoOfDelegator.getBonding());
     }
 
-    /**
-     * DelegatingTx - delegating (txCnt : 1, totalTxCnt : 19, fee : 1, total fee : 2,010,020)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 18)
     public void DelegatingTxDelegatingToSelf() throws Exception {
@@ -1401,11 +1313,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(344, sendResponse.getError().getCode());
     }
 
-    /**
-     * UndelegatingTx - delegating (txCnt : 1, totalTxCnt : 20, fee : 1, total fee : 2,010,021)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 20)
     public void UndelegatingTxUndelegating() throws Exception {
@@ -1436,11 +1343,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedDelegatorBondingInfo.getBonding(), delegatorBondInfoResponse.getBonding());
     }
 
-    /**
-     * UndelegatingTx - delegating (txCnt : 1, totalTxCnt : 21, fee : 1, total fee : 2,010,022)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 21)
     public void UndelegatingTxUndelegatingOfValidator() throws Exception {
@@ -1469,11 +1371,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedValidatorBondingInfo.getBonding(), validatorBondInfoResponse.getBonding());
     }
 
-    /**
-     * GRProposalTx - 유효성 체크
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 22)
     public void GRProposalTxCheckValidation() throws Exception {
@@ -1661,11 +1558,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(319, sendResponse.getError().getCode());
     }
 
-    /**
-     * GRProposalTx - grproposal (txCnt : 2, totalTxCnt : 23, fee : 101, total fee : 2,010,123)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 23)
     public void GRProposalTxGRProposal() throws Exception {
@@ -1785,11 +1677,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         }
     }
 
-    /**
-     * GRVoteTx - grVote disagree (txCnt : 4, totalTxCnt : 45, fee : 101, total fee : 2,021,924)
-     *
-     * @throws Exception
-     */
     @Test
     @Order(order = 24)
     public void GRVoteTxGRVoteDisagree() throws Exception {
@@ -1817,8 +1704,108 @@ public class TestTxAPIAboutMultiNode extends TestParent {
             }
         }
 
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withRewardXtoPerCoin(expectedGR.getRewardXtoPerCoin())
+                                .withCurrentReflection(expectedGR.getCurrentReflection())
+                                .build()
+                )
+                .build();
+
+        TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        //(1) GR 찬성
+        txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxGRVoteBody(true))
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        //(2) GR 반대
+        txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxGRVoteBody(false))
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        //(3) 위의 2개 Tx가 발생하게 되면 2개의 블럭이 생성되고 그후 위에서 blockNumsForVoting 값을 2로 주었기 때문에 투표를 하게 되면 에러가 리턴되는지 확인.
+        txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxGRVoteBody(false))
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(txSendResponse.getError());
+        Assert.assertEquals(321, txSendResponse.getError().getCode());
+
+        //(4) 새로운 블록을 생성하여 최종적으로 반대가 확정되어 기존 GR이 그대로 반영되는지 확인
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxCommonBody())
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
         ProgressGovernance actualGR = xCube.getProgressGovernance(null, targetChainId).send();
-        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
+        assertNotNull(actualGR.getError());
+        Assert.assertEquals(601, actualGR.getError().getCode());
+
+        CurrentGovernance.Result expectedCurrentGovernance = makeCurrentGR();
+        CurrentGovernance actualCurrentGovernance = xCube.getCurrentGovernance(null, targetChainId).send();
+        assertEquals(expectedCurrentGovernance.getGrVersion(), actualCurrentGovernance.getGR().getGrVersion());
+    }
+
+    @Test
+    @Order(order = 25)
+    public void GRVoteTxGRVoteAgree() throws Exception {
+        //아래 테스트를 위하 GR 제안.
+        ProgressGovernance.Result expectedGR = makeProgressGR();
+        expectedGR.setExpectedGRVersion(2);
+        expectedGR.setAgreeRate(0);
+        expectedGR.setDisagreeRate(0);
+        expectedGR.setPass(false);
+        expectedGR.setCurrentBlockNo(startCurrentBlockNo++);
+        expectedGR.setEndOfVotingBlockNo(startEndOfVotingBlockNo++);
+        expectedGR.setReflectionBlockNo(startReflectionBlockNo++);
+
+        expectedGR.setRewardXtoPerCoin(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.XTOType, 10));
+        expectedGR.setCurrentReflection(new TxGRProposalBody.CurrentReflection(4, 5));
+
+        String grProposer = null;
+        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
+        for (SimpleValidatorResponse.Result result : simpleValidatorsResponse.getResult()) {
+            if ((result.getEndBlockNo() - result.getStartBlockNo()) >= 23) {
+                grProposer = result.getValidatorAccountAddr();
+            }
+        }
 
         TxRequest txRequest = makeDefaultBuilder()
                 .withSender(grProposer)
@@ -1837,75 +1824,76 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(txSendResponse.getError());
 
-        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
-        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
+        //(1) GR 반대
+        txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxGRVoteBody(false))
+                .build();
 
-        //(1) GR 찬성
-//        txRequest = makeDefaultBuilder()
-//                .withSender(validator)
-//                .withReceiver(validator)
-//                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
-//                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withPayloadBody(new TxGRVoteBody(true))
-//                .build();
-//
-//        txSendResponse = xCube.sendTransaction(txRequest).send();
-//        assertNull(txSendResponse.getError());
-//
-//        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
-//        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
-//
-//        //(2) GR 반대
-//        txRequest = makeDefaultBuilder()
-//                .withSender(validator)
-//                .withReceiver(validator)
-//                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
-//                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withPayloadBody(new TxGRVoteBody(false))
-//                .build();
-//
-//        txSendResponse = xCube.sendTransaction(txRequest).send();
-//        assertNull(txSendResponse.getError());
-//
-//        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
-//        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
-//
-//        //(3) 위의 2개 Tx가 발생하게 되면 2개의 블럭이 생성되고 그후 위에서 blockNumsForVoting 값을 2로 주었기 때문에 투표를 하게 되면 에러가 리턴되는지 확인.
-//        txRequest = makeDefaultBuilder()
-//                .withSender(validator)
-//                .withReceiver(validator)
-//                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
-//                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withPayloadBody(new TxGRVoteBody(false))
-//                .build();
-//
-//        txSendResponse = xCube.sendTransaction(txRequest).send();
-//        assertNotNull(txSendResponse.getError());
-//        Assert.assertEquals(321, txSendResponse.getError().getCode());
-//
-//        //(4) 새로운 블록을 생성하여 최종적으로 반대가 확정되어 기존 GR이 그대로 반영되는지 확인
-//        txRequest = makeDefaultBuilder()
-//                .withSender(sender)
-//                .withReceiver(sender)
-//                .withPayloadType(ApiEnum.PayloadType.CommonType)
-//                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
-//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withPayloadBody(new TxCommonBody())
-//                .build();
-//
-//        txSendResponse = xCube.sendTransaction(txRequest).send();
-//        assertNull(txSendResponse.getError());
-//
-//        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
-//        assertNotNull(actualGR.getError());
-//        Assert.assertEquals(601, actualGR.getError().getCode());
-//
-//        CurrentGovernance.Result expectedCurrentGovernance = makeCurrentGR();
-//        CurrentGovernance actualCurrentGovernance = xCube.getCurrentGovernance(null, targetChainId).send();
-//        assertEquals(expectedCurrentGovernance, actualCurrentGovernance.getGR());
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        //(2) GR 찬성
+        txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxGRVoteBody(true))
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        ProgressGovernance actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+        Iterator<String> iter = actualGR.getGR().getStake().keySet().iterator();
+        int txCnt = 3;
+        while (iter.hasNext()) {
+            String addr = iter.next();
+            if (addr.equals(grProposer)) {
+                continue;
+            }
+
+            txRequest = makeDefaultBuilder()
+                    .withSender(addr)
+                    .withReceiver(addr)
+                    .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+                    .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+                    .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                    .withPayloadBody(new TxGRVoteBody(true))
+                    .build();
+
+            txSendResponse = xCube.sendTransaction(txRequest).send();
+            assertNull(txSendResponse.getError());
+            txCnt--;
+        }
+
+        //(4) 새로운 블록을 생성하여 최종적으로 가결 확정되어 새로운 GR로 적용되었는지 확인한다.
+        for (int i = 0; i < txCnt; i++) {
+            txRequest = makeDefaultBuilder()
+                    .withSender(sender)
+                    .withReceiver(sender)
+                    .withPayloadType(ApiEnum.PayloadType.CommonType)
+                    .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                    .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                    .withPayloadBody(new TxCommonBody())
+                    .build();
+
+            txSendResponse = xCube.sendTransaction(txRequest).send();
+            assertNull(txSendResponse.getError());
+        }
+
+        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+        assertNotNull(actualGR.getError());
+        Assert.assertEquals(601, actualGR.getError().getCode());
+
+        CurrentGovernance actualCurrentGovernance = xCube.getCurrentGovernance(null, targetChainId).send();
+        assertEquals(2, actualCurrentGovernance.getGR().getGrVersion());
     }
 
     @Test
@@ -1934,6 +1922,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         GRProposalTxCheckValidation();
         GRProposalTxGRProposal();
         GRVoteTxGRVoteDisagree();
+        GRVoteTxGRVoteAgree();
     }
 
     @Test
