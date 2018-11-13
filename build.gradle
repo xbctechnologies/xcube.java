@@ -1,6 +1,6 @@
 subprojects {
     group 'com.xbctechnologies'
-    version '0.0.1'
+    version '0.0.1-snapshot'
 
     apply plugin: 'java'
     sourceCompatibility = 1.8
