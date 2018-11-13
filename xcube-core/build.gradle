@@ -82,12 +82,17 @@ artifacts {
 publishing {
     publications {
         myPublication(MavenPublication) {
+            from project.components.java
+            groupId "${project.group}"
+            artifactId "${project.jar.baseName}"
+            version "${project.version}"
             pom {
                 name = 'XCube core'
                 description = 'Java core library of xblockchain'
                 url = 'https://github.com/xbctechnologies/xcube.java'
+                version "${project.version}"
                 scm {
-                    url = "http://106.251.231.226:2033/xchain-dev/xcube.java"
+                    url = "https://github.com/xbctechnologies/xcube.java.git"
                 }
                 licenses {
                     license {
