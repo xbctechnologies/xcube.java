@@ -42,6 +42,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     private static long startEndOfVotingBlockNo = 28;
     private static long startReflectionBlockNo = 29;
 
+    private List<XCube> xCubeList = new ArrayList<>();
+
     private TxRequest.Builder makeDefaultBuilder() {
         return TxRequest.builder()
                 .withIsSync(true)
@@ -60,6 +62,17 @@ public class TestTxAPIAboutMultiNode extends TestParent {
                         .withDefaultTimeout(60000)
                         .build()
         ));
+
+        String[] hosts = new String[]{"106.251.231.226:7120", "106.251.231.226:7220", "106.251.231.226:7320", "106.251.231.226:7420"};
+        for (String host : hosts) {
+            xCubeList.add(new XCube(new RestHttpClient(
+                    RestHttpConfig.builder()
+                            .withXNodeUrl(String.format("http://%s", host))
+                            .withMaxConnection(100)
+                            .withDefaultTimeout(60000)
+                            .build()
+            )));
+        }
     }
 
     /**
@@ -1766,8 +1779,133 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
 
         //다음 GR을 테스트하기 위해 삭제
-        BoolResponse boolResponse = xCube.removeNewGR(null, targetChainId).send();
-        assertNull(boolResponse.getError());
+        for (XCube client : xCubeList) {
+            BoolResponse boolResponse = client.removeNewGR(null, targetChainId).send();
+            assertNull(boolResponse.getError());
+        }
+    }
+
+    /**
+     * GRVoteTx - grVote disagree (txCnt : 4, totalTxCnt : 45, fee : 101, total fee : 2,021,924)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 24)
+    public void GRVoteTxGRVoteDisagree() throws Exception {
+        //아래 테스트를 위하 GR 제안.
+        ProgressGovernance.Result expectedGR = makeProgressGR();
+        expectedGR.setExpectedGRVersion(2);
+        expectedGR.setAgreeRate(0);
+        expectedGR.setDisagreeRate(0);
+        expectedGR.setPass(false);
+        startCurrentBlockNo++;
+        startEndOfVotingBlockNo++;
+        startReflectionBlockNo++;
+        expectedGR.setCurrentBlockNo(startCurrentBlockNo++);
+        expectedGR.setEndOfVotingBlockNo(startEndOfVotingBlockNo++);
+        expectedGR.setReflectionBlockNo(startReflectionBlockNo++);
+
+        expectedGR.setRewardXtoPerCoin(CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.GXTOType, 1));
+        expectedGR.setCurrentReflection(new TxGRProposalBody.CurrentReflection(2, 3));
+
+        String grProposer = null;
+        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
+        for (SimpleValidatorResponse.Result result : simpleValidatorsResponse.getResult()) {
+            if ((result.getEndBlockNo() - result.getStartBlockNo()) >= 23) {
+                grProposer = result.getValidatorAccountAddr();
+            }
+        }
+
+        ProgressGovernance actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
+
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(grProposer)
+                .withReceiver(grProposer)
+                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(
+                        TxGRProposalBody.builder()
+                                .withRewardXtoPerCoin(expectedGR.getRewardXtoPerCoin())
+                                .withCurrentReflection(expectedGR.getCurrentReflection())
+                                .build()
+                )
+                .build();
+
+        TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
+
+        //(1) GR 찬성
+//        txRequest = makeDefaultBuilder()
+//                .withSender(validator)
+//                .withReceiver(validator)
+//                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+//                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withPayloadBody(new TxGRVoteBody(true))
+//                .build();
+//
+//        txSendResponse = xCube.sendTransaction(txRequest).send();
+//        assertNull(txSendResponse.getError());
+//
+//        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+//        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
+//
+//        //(2) GR 반대
+//        txRequest = makeDefaultBuilder()
+//                .withSender(validator)
+//                .withReceiver(validator)
+//                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+//                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withPayloadBody(new TxGRVoteBody(false))
+//                .build();
+//
+//        txSendResponse = xCube.sendTransaction(txRequest).send();
+//        assertNull(txSendResponse.getError());
+//
+//        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+//        System.out.println(JsonUtil.generateClassToJson(actualGR.getGR()));
+//
+//        //(3) 위의 2개 Tx가 발생하게 되면 2개의 블럭이 생성되고 그후 위에서 blockNumsForVoting 값을 2로 주었기 때문에 투표를 하게 되면 에러가 리턴되는지 확인.
+//        txRequest = makeDefaultBuilder()
+//                .withSender(validator)
+//                .withReceiver(validator)
+//                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+//                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withPayloadBody(new TxGRVoteBody(false))
+//                .build();
+//
+//        txSendResponse = xCube.sendTransaction(txRequest).send();
+//        assertNotNull(txSendResponse.getError());
+//        Assert.assertEquals(321, txSendResponse.getError().getCode());
+//
+//        //(4) 새로운 블록을 생성하여 최종적으로 반대가 확정되어 기존 GR이 그대로 반영되는지 확인
+//        txRequest = makeDefaultBuilder()
+//                .withSender(sender)
+//                .withReceiver(sender)
+//                .withPayloadType(ApiEnum.PayloadType.CommonType)
+//                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withPayloadBody(new TxCommonBody())
+//                .build();
+//
+//        txSendResponse = xCube.sendTransaction(txRequest).send();
+//        assertNull(txSendResponse.getError());
+//
+//        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+//        assertNotNull(actualGR.getError());
+//        Assert.assertEquals(601, actualGR.getError().getCode());
+//
+//        CurrentGovernance.Result expectedCurrentGovernance = makeCurrentGR();
+//        CurrentGovernance actualCurrentGovernance = xCube.getCurrentGovernance(null, targetChainId).send();
+//        assertEquals(expectedCurrentGovernance, actualCurrentGovernance.getGR());
     }
 
     @Test
@@ -1795,6 +1933,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         UndelegatingTxUndelegatingOfValidator();
         GRProposalTxCheckValidation();
         GRProposalTxGRProposal();
+        GRVoteTxGRVoteDisagree();
     }
 
     @Test
