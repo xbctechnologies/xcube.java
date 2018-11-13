@@ -70,22 +70,35 @@ bintray {
     }
 }
 
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 artifacts {
     archives sourcesJar
+    archives javadocJar
 }
 
 publishing {
     publications {
         myPublication(MavenPublication) {
             from project.components.java
-            groupId "${project.group}"
-            artifactId "${project.jar.baseName}"
-            version "${project.version}"
+            artifact sourcesJar
+            artifact javadocJar
             pom {
                 name = 'XCube core'
                 description = 'Java core library of xblockchain'
