@@ -1653,7 +1653,12 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
 
         //다음 GR을 테스트하기 위해 삭제
+//        int i=0;
         for (XCube client : xCubeList) {
+//            i++;
+//            if (i == 1){
+//                continue;
+//            }
             BoolResponse boolResponse = client.removeNewGR(null, targetChainId).send();
             assertNull(boolResponse.getError());
             assertNull(client.getProgressGovernance(null, targetChainId).send().getGR());
