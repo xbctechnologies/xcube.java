@@ -3098,7 +3098,7 @@ public class TestTxAPI extends TestParent {
         seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
 
         List<TxMakeXChainBody.Validator> validators = new ArrayList<>();
-        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "Ak02Nx/qaOCMn0iox4XZaA1qKsSWcl2C2Em8/USAhrP"), CurrencyUtil.generateXTO(CoinType, 1).toString(),
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssP"), CurrencyUtil.generateXTO(CoinType, 1).toString(),
                 defaultCompanyName,
                 defaultCompanyDesc,
                 defaultCompanyUrl,
@@ -3131,14 +3131,14 @@ public class TestTxAPI extends TestParent {
         seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
 
         validators = new ArrayList<>();
-        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "Ak02Nx/qaOCMn0iox4XZaA1qKsSWcl2C2Em8/USAhrPR"), CurrencyUtil.generateXTO(CoinType, 1).toString(),
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 1).toString(),
                 defaultCompanyName,
                 defaultCompanyDesc,
                 defaultCompanyUrl,
                 defaultCompanyLogoUrl,
                 defaultCompanyLat,
                 defaultCompanyLon));
-        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "Ak02Nx/qaOCMn0iox4XZaA1qKsSWcl2C2Em8/USAhrPR"), CurrencyUtil.generateXTO(CoinType, 15).toString(),
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 15).toString(),
                 defaultCompanyName,
                 defaultCompanyDesc,
                 defaultCompanyUrl,
@@ -3171,7 +3171,7 @@ public class TestTxAPI extends TestParent {
         seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
 
         validators = new ArrayList<>();
-        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "Ak02Nx/qaOCMn0iox4XZaA1qKsSWcl2C2Em8/USAhrPR"), CurrencyUtil.generateXTO(CoinType, -20).toString(),
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, -20).toString(),
                 defaultCompanyName,
                 defaultCompanyDesc,
                 defaultCompanyUrl,
@@ -3204,7 +3204,7 @@ public class TestTxAPI extends TestParent {
         seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
 
         validators = new ArrayList<>();
-        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "Ak02Nx/qaOCMn0iox4XZaA1qKsSWcl2C2Em8/USAhrPR"), CurrencyUtil.generateXTO(CoinType, 2).toString(),
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 2).toString(),
                 defaultCompanyName,
                 defaultCompanyDesc,
                 defaultCompanyUrl,
@@ -3237,14 +3237,14 @@ public class TestTxAPI extends TestParent {
         seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
 
         validators = new ArrayList<>();
-        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "Ak02Nx/qaOCMn0iox4XZaA1qKsSWcl2C2Em8/USAhrPR"), CurrencyUtil.generateXTO(CoinType, 5).toString(),
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 5).toString(),
                 defaultCompanyName,
                 defaultCompanyDesc,
                 defaultCompanyUrl,
                 defaultCompanyLogoUrl,
                 defaultCompanyLat,
                 defaultCompanyLon));
-        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "A2110Eau20O5mq6tgQh8crX9tCeLA4ezwhKlCCeC5/Mq"), CurrencyUtil.generateXTO(CoinType, 20).toString(),
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AuNGgU3yl4p00bqvNYbx/3CyX0VomKMM6q6dxc9Q4c1u"), CurrencyUtil.generateXTO(CoinType, 20).toString(),
                 defaultCompanyName,
                 defaultCompanyDesc,
                 defaultCompanyUrl,
@@ -3453,8 +3453,8 @@ public class TestTxAPI extends TestParent {
 //        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
 //        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
 //        System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
-        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
-        System.out.println(JsonUtil.generateClassToJson(simpleValidatorResponse.getResult()));
+//        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+//        System.out.println(JsonUtil.generateClassToJson(simpleValidatorResponse.getResult()));
 //        AccountDataResponse accountDataResponse = xCube.getAccount(null, targetChainId, validator).send();
 //        System.out.println(JsonUtil.generateClassToJson(accountDataResponse.getAccount()));
 //        AccountBondInfoResponse bondInfoResponse = xCube.getBonding(null, targetChainId, sender, null).send();
@@ -3466,7 +3466,7 @@ public class TestTxAPI extends TestParent {
 //        System.out.println(JsonUtil.generateClassToJson(currentGovernance.getGR()));
     }
 
-//    @Test
+    //    @Test
     public void test() throws Exception {
         CheckValidationCommonFields();
         CommonTxCheckValidation();

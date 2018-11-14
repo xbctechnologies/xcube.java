@@ -27,9 +27,9 @@ public class TestParent {
 
     public final String targetChainId = "1T";
 
-    public final String sender = "0x9ac601f1a9c8385cb1fd794d030898168b0b617a";
-    public final String receiver = "0x7826d36525a285072fd8fe7cbe1597013d8d9761";
-    public final String validator = "0xd52ff6084b6dec53b74b2ac9133fe3541709fa7f";
+    public final String sender = "0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5";
+    public final String receiver = "0xd09913fec8f4797b5344eddea930d2558e5d9015";
+    public final String validator = "0xa642f33ec1a951eceded3cf9e51edea1a806105b";
 
     public final BigInteger rewardXtoPerCoin = CurrencyUtil.generateXTO(GXTOType, 1);
 
@@ -330,16 +330,16 @@ public class TestParent {
         BigInteger predictionRewardBalance = new BigInteger("0");
         BigInteger lockingBalance = new BigInteger("0");
         String[] accounts = new String[]{
-                "0x392531466fe4f4a4368fb48c33bf13dec2b518a9",
-                "0x0224ec920928f97ce2c41fc0e3bbadba70fbd940",
-                "0xd52ff6084b6dec53b74b2ac9133fe3541709fa7f",
-                "0xeba3f7d6983141ecbca0319aed800458d9a3f2d5",
-                "0x2dbcfcd26e47dbe403194caad0cee168f432cf3a",
-                "0x7826d36525a285072fd8fe7cbe1597013d8d9761",
-                "0x999702f5dccec1af21201f18c25ff04aa4ed413c",
-                "0x9ac601f1a9c8385cb1fd794d030898168b0b617a",
-                "0x4b86dfdf5b061dbc5c168e54467c4363a3060101",
-                "0xfb3deb14ccad367142cf4ea78b2d969b0d100513",
+                "0xd09913fec8f4797b5344eddea930d2558e5d9015",
+                "0x1167d0b1f1194a473691287dd3d886518a70b911",
+                "0x5d74f2b7024c2258e1213cffdd983b068bbfade1",
+                "0xe66cf2bc13cd7e607d4d619befdd6a51dbcd3adc",
+                "0xfefffa046afb0aa030a6633a3976fcefe6791fbf",
+                "0x60bcb2b65d1f086fc34aeb8f00a1f3794eed7771",
+                "0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5",
+                "0xa642f33ec1a951eceded3cf9e51edea1a806105b",
+                "0xaa0efb5946698728720e508a7029e539ecfa399a",
+                "0xf652d4681058865cebfc25d2ed7934fa03005c6b",
         };
         for (String account : accounts) {
             AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, account, CurrencyUtil.CurrencyType.XTOType).send();
