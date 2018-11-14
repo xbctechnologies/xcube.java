@@ -1661,7 +1661,10 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 //            }
             BoolResponse boolResponse = client.removeNewGR(null, targetChainId).send();
             assertNull(boolResponse.getError());
-            assertNull(client.getProgressGovernance(null, targetChainId).send().getGR());
+            ProgressGovernance gr = client.getProgressGovernance(null, targetChainId).send();
+            assertNotNull(gr.getError());
+            assertEquals(601, gr.getError().getCode());
+            assertNull(gr.getGR());
         }
     }
 
@@ -1915,8 +1918,9 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
     @Test
     public void ttt() {
-        for (XCube cc : xCubeList) {
-            System.out.println(JsonUtil.generateClassToJson(cc.getProgressGovernance(null, targetChainId).send().getGR()));
-        }
+        System.out.println(xCube.getProgressGovernance(null, targetChainId).send().getError());
+//        for (XCube cc : xCubeList) {
+//            System.out.println(JsonUtil.generateClassToJson(cc.getProgressGovernance(null, targetChainId).send().getGR()));
+//        }
     }
 }
