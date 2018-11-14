@@ -27,7 +27,7 @@ public class TestParent {
 
     public final String targetChainId = "1T";
 
-    public final String sender = "96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5";
+    public final String sender = "0x9ac601f1a9c8385cb1fd794d030898168b0b617a";
     public final String receiver = "0x7826d36525a285072fd8fe7cbe1597013d8d9761";
     public final String validator = "0xd52ff6084b6dec53b74b2ac9133fe3541709fa7f";
 
@@ -69,7 +69,7 @@ public class TestParent {
             "    \"id\": \"7d0f3c43-b518-4df7-98f7-c788c88b599a\",\n" +
             "    \"version\": 3\n" +
             "  }\n" +
-            "}\n";
+            "}";
 
     @Before
     public void init() {
