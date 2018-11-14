@@ -53,7 +53,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
     @Before
     public void init() {
-        String etherHost = "106.251.231.226:7120";
+        String etherHost = "106.251.231.226:7420";
 //        String etherHost = "localhost:7979";
         xCube = new XCube(new RestHttpClient(
                 RestHttpConfig.builder()
@@ -1510,7 +1510,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
                 .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
                 .withPayloadBody(
                         TxGRProposalBody.builder()
-                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(2, 3))
+                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(1, 3))
                                 .build()
                 )
                 .build();
@@ -1538,24 +1538,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         sendResponse = xCube.sendTransaction(txRequest).send();
         assertNotNull(sendResponse.getError());
         Assert.assertEquals(1, sendResponse.getError().getCode());
-
-        //제안자(Validator)가 제안조건(제안을 하기 위한 연속된 블록합의 수)을 충족하지 못한경우.
-        txRequest = makeDefaultBuilder()
-                .withSender(receiver)
-                .withReceiver(receiver)
-                .withPayloadType(ApiEnum.PayloadType.GRProposalType)
-                .withFee(CurrencyUtil.generateXTO(CoinType, 100))
-                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-                .withPayloadBody(
-                        TxGRProposalBody.builder()
-                                .withCurrentReflection(new TxGRProposalBody.CurrentReflection(2, 3))
-                                .build()
-                )
-                .build();
-
-        sendResponse = xCube.sendTransaction(txRequest).send();
-        assertNotNull(sendResponse.getError());
-        Assert.assertEquals(319, sendResponse.getError().getCode());
     }
 
     @Test
@@ -1674,6 +1656,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         for (XCube client : xCubeList) {
             BoolResponse boolResponse = client.removeNewGR(null, targetChainId).send();
             assertNull(boolResponse.getError());
+            assertNull(client.getProgressGovernance(null, targetChainId).send().getGR());
         }
     }
 
@@ -1699,7 +1682,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         String grProposer = null;
         SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
         for (SimpleValidatorResponse.Result result : simpleValidatorsResponse.getResult()) {
-            if ((result.getEndBlockNo() - result.getStartBlockNo()) >= 23) {
+            if ((result.getEndBlockNo() - result.getStartBlockNo()) >= 1) {
                 grProposer = result.getValidatorAccountAddr();
             }
         }
@@ -1802,7 +1785,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         String grProposer = null;
         SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
         for (SimpleValidatorResponse.Result result : simpleValidatorsResponse.getResult()) {
-            if ((result.getEndBlockNo() - result.getStartBlockNo()) >= 23) {
+            if ((result.getEndBlockNo() - result.getStartBlockNo()) >= 1) {
                 grProposer = result.getValidatorAccountAddr();
             }
         }
@@ -1824,20 +1807,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(txSendResponse.getError());
 
-        //(1) GR 반대
-        txRequest = makeDefaultBuilder()
-                .withSender(grProposer)
-                .withReceiver(grProposer)
-                .withPayloadType(ApiEnum.PayloadType.GRVoteType)
-                .withFee(CurrencyUtil.generateXTO(CoinType, 0))
-                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-                .withPayloadBody(new TxGRVoteBody(false))
-                .build();
-
-        txSendResponse = xCube.sendTransaction(txRequest).send();
-        assertNull(txSendResponse.getError());
-
-        //(2) GR 찬성
+        // GR 찬성
         txRequest = makeDefaultBuilder()
                 .withSender(grProposer)
                 .withReceiver(grProposer)
@@ -1852,7 +1822,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         ProgressGovernance actualGR = xCube.getProgressGovernance(null, targetChainId).send();
         Iterator<String> iter = actualGR.getGR().getStake().keySet().iterator();
-        int txCnt = 3;
+        int txCnt = 4;
         while (iter.hasNext()) {
             String addr = iter.next();
             if (addr.equals(grProposer)) {
@@ -1931,7 +1901,17 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
         System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
 
+        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
+        System.out.println(JsonUtil.generateClassToJson(simpleValidatorsResponse.getResult()));
+
         AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
+    }
+
+    @Test
+    public void ttt() {
+        for (XCube cc : xCubeList) {
+            System.out.println(JsonUtil.generateClassToJson(cc.getProgressGovernance(null, targetChainId).send().getGR()));
+        }
     }
 }
