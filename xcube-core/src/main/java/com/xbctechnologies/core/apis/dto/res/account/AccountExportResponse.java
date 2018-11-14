@@ -21,13 +21,14 @@ public class AccountExportResponse extends Response<AccountExportResponse.Result
         private String ciphertext;
         private Cipherparams cipherparams;
         private String kdf;
-        private int n;
-        private int r;
-        private int p;
-        private int dklen;
+        private KDFParams kdfparams;
+//        private int n;
+//        private int r;
+//        private int p;
+//        private int dklen;
         private int c;
         private String prf;
-        private String salt;
+//        private String salt;
         private String mac;
     }
 
@@ -35,4 +36,14 @@ public class AccountExportResponse extends Response<AccountExportResponse.Result
     public static class Cipherparams {
         private String iv;
     }
+
+    @Data
+    public static class KDFParams {
+        private int n;
+        private int r;
+        private int p;
+        private int dklen;
+        private String salt;
+    }
+
 }

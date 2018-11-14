@@ -96,9 +96,9 @@ public class TestXCubeTxSignAPI extends TestParent {
     private String getExportKey(String passwd, AccountExportResponse exportResponse) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidCipherTextException, KeyException {
         XbCipherUtil cipherUtil = new XbCipherUtil();
         String priKeyHexstr = cipherUtil.pbkdfDecyrptKey(passwd.getBytes("UTF-8"),
-                Hex.decode(exportResponse.getResult().getCrypto().getSalt()),
-                exportResponse.getResult().getCrypto().getN(), exportResponse.getResult().getCrypto().getR(),
-                exportResponse.getResult().getCrypto().getP(), exportResponse.getResult().getCrypto().getDklen(),
+                Hex.decode(exportResponse.getResult().getCrypto().getKdfparams().getSalt()),
+                exportResponse.getResult().getCrypto().getKdfparams().getN(), exportResponse.getResult().getCrypto().getKdfparams().getR(),
+                exportResponse.getResult().getCrypto().getKdfparams().getP(), exportResponse.getResult().getCrypto().getKdfparams().getDklen(),
                 exportResponse.getResult().getCrypto().getCiphertext(), exportResponse.getResult().getCrypto().getMac(),
                 exportResponse.getResult().getCrypto().getCipherparams().getIv());
         return priKeyHexstr;

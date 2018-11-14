@@ -27,7 +27,7 @@ public class TestParent {
 
     public final String targetChainId = "1T";
 
-    public final String sender = "0x9ac601f1a9c8385cb1fd794d030898168b0b617a";
+    public final String sender = "96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5";
     public final String receiver = "0x7826d36525a285072fd8fe7cbe1597013d8d9761";
     public final String validator = "0xd52ff6084b6dec53b74b2ac9133fe3541709fa7f";
 
@@ -47,27 +47,29 @@ public class TestParent {
     public final String privKeyPassword = "1111";
     public final String privKeyJson = "{\n" +
             "  \"result\": {\n" +
-            "    \"address\": \"9ac601f1a9c8385cb1fd794d030898168b0b617a\",\n" +
+            "    \"address\": \"96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5\",\n" +
             "    \"crypto\": {\n" +
             "      \"cipher\": \"aes-128-ctr\",\n" +
-            "      \"ciphertext\": \"9f1b9a92c88f6f135764f7bc16c02db7ea8eaa08ed7c67c32b3ccbf773e2118c\",\n" +
+            "      \"ciphertext\": \"946f6897b74ef9e3f32de0b2e78840c1ace962f9d39a4e1497c214597f986f41\",\n" +
             "      \"cipherparams\": {\n" +
-            "        \"iv\": \"3b227e8926e3f0f7a6280cc7ed4b663b\"\n" +
+            "        \"iv\": \"b3e80216cc5ac0fbf9dc118d5e8d26bb\"\n" +
             "      },\n" +
             "      \"kdf\": \"scrypt\",\n" +
-            "      \"n\": 262144,\n" +
-            "      \"r\": 8,\n" +
-            "      \"p\": 1,\n" +
-            "      \"dklen\": 32,\n" +
+            "      \"kdfparams\": {\n" +
+            "        \"dklen\": 32,\n" +
+            "        \"n\": 262144,\n" +
+            "        \"p\": 1,\n" +
+            "        \"r\": 8,\n" +
+            "        \"salt\": \"3924a899921a18dbbaf36ace2ce5c68b34725b30ce10be0fda9898feb1a804b0\"\n" +
+            "      },\n" +
             "      \"c\": 0,\n" +
             "      \"prf\": \"\",\n" +
-            "      \"salt\": \"5a785a9c993943a7e1b3c2785c71d6a1c89ba279cf4c3a4ee18f396d59b570bc\",\n" +
-            "      \"mac\": \"c390c34b95a305b96045ad5ee98b7e6b85ebf7b2fdaa0715414201ffe3338ad6\"\n" +
+            "      \"mac\": \"8b04192d8289087e47378a02b304ef496fd3fd563ecc808a5c10c3747656a586\"\n" +
             "    },\n" +
-            "    \"id\": \"1d0cdbaa-f33a-4b78-87bb-042f1979d4ee\",\n" +
-            "    \"version\": 1\n" +
+            "    \"id\": \"7d0f3c43-b518-4df7-98f7-c788c88b599a\",\n" +
+            "    \"version\": 3\n" +
             "  }\n" +
-            "}";
+            "}\n";
 
     @Before
     public void init() {
