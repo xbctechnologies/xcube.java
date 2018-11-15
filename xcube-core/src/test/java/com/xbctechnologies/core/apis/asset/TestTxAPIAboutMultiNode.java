@@ -4,7 +4,6 @@ import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
 import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
-import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.data.*;
@@ -39,8 +38,8 @@ import static org.junit.Assert.*;
 @RunWith(OrderedRunner.class)
 public class TestTxAPIAboutMultiNode extends TestParent {
     private static long startCurrentBlockNo = 26;
-    private static long startEndOfVotingBlockNo = 28;
-    private static long startReflectionBlockNo = 29;
+    private static long startEndOfVotingBlockNo = startCurrentBlockNo + 2;
+    private static long startReflectionBlockNo = startCurrentBlockNo + 3;
 
     private List<XCube> xCubeList = new ArrayList<>();
 
@@ -227,7 +226,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(txSendResponse.getError());
-        assertNotNull(txSendResponse.getResult());
 
         AccountBalanceResponse expectedSender = makeAccountBalance(sender, "6,999,989,000,000,000,000,000,000", "6,999,989,000,000,000,000,000,000", "0", "0", "0", XTOType);
         AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
@@ -1652,20 +1650,35 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         actualGR.getGR().setStake(null);
         assertEquals(expectedGR, actualGR.getGR());
 
-        //다음 GR을 테스트하기 위해 삭제
-//        int i=0;
-        for (XCube client : xCubeList) {
-//            i++;
-//            if (i == 1){
-//                continue;
-//            }
-            BoolResponse boolResponse = client.removeNewGR(null, targetChainId).send();
-            assertNull(boolResponse.getError());
-            ProgressGovernance gr = client.getProgressGovernance(null, targetChainId).send();
-            assertNotNull(gr.getError());
-            assertEquals(601, gr.getError().getCode());
-            assertNull(gr.getGR());
+        //다음 GR을 테스트하기 위해 Tx발생
+        for (int i = 0; i < 2; i++) {
+            txRequest = makeDefaultBuilder()
+                    .withSender(grProposer)
+                    .withReceiver(grProposer)
+                    .withPayloadType(ApiEnum.PayloadType.GRVoteType)
+                    .withFee(CurrencyUtil.generateXTO(CoinType, 0))
+                    .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                    .withPayloadBody(new TxGRVoteBody(false))
+                    .build();
+
+            txSendResponse = xCube.sendTransaction(txRequest).send();
+            assertNull(txSendResponse.getError());
         }
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxCommonBody())
+                .build();
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        actualGR = xCube.getProgressGovernance(null, targetChainId).send();
+        assertNotNull(actualGR.getError());
+        assertEquals(601, actualGR.getError().getCode());
+        assertNull(actualGR.getGR());
     }
 
     @Test
@@ -1874,6 +1887,127 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(2, actualCurrentGovernance.getGR().getGrVersion());
     }
 
+    /**
+     * RecoverValidatorTx - 유효성 체크
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 28)
+    public void RecoverValidatorTxCheckValidation() throws Exception {
+        //Sender와 Receiver를 다르게 설정한 경우.
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(validator)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.RecoverValidatorType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxRecoverBody())
+                .build();
+
+        TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(txSendResponse.getError());
+        Assert.assertEquals(309, txSendResponse.getError().getCode());
+
+        //Validator로 등록되지 않은 경우.
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.RecoverValidatorType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxRecoverBody())
+                .build();
+
+        txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNotNull(txSendResponse.getError());
+        Assert.assertEquals(401, txSendResponse.getError().getCode());
+    }
+
+    /**
+     * RecoverValidatorTx - recoverValidator  (txCnt : 1, totalTxCnt : 50, fee : 1, total fee : 2,022,026)
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 29)
+    public void RecoverValidatorTxRecoverValidator() throws Exception {
+        //1. A계정을 Validator로 등록
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.BondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 10000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxBondingBody())
+                .build();
+        TxSendResponse sendResponse = xCube.bonding(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        for (int i = 0; i < 5; i++) {
+            txRequest = makeDefaultBuilder()
+                    .withSender(sender)
+                    .withReceiver(sender)
+                    .withPayloadType(ApiEnum.PayloadType.CommonType)
+                    .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                    .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                    .withPayloadBody(new TxCommonBody())
+                    .build();
+            sendResponse = xCube.sendTransaction(txRequest).send();
+            assertNull(sendResponse.getError());
+        }
+
+        boolean isExists = false;
+        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
+//        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+//            if (result.getValidatorAccountAddr().equals(sender)) {
+//                isExists = true;
+//                assertEquals(true, result.isFreezing());
+//                Assert.assertEquals(ApiEnum.FreezingType.Disconnected, result.getFreezingReason());
+//                assertEquals(48, result.getFreezingBlockNo());
+//                assertEquals(3, result.getDisconnectCnt());
+//            }
+//        }
+//        assertEquals(true, isExists);
+//
+//        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+//        Assert.assertEquals(true, simpleValidatorResponse.getResult().isFreezing());
+//        Assert.assertEquals(ApiEnum.FreezingType.Disconnected, simpleValidatorResponse.getResult().getFreezingReason());
+//        Assert.assertEquals(48, simpleValidatorResponse.getResult().getFreezingBlockNo());
+//
+//        txRequest = makeDefaultBuilder()
+//                .withSender(sender)
+//                .withReceiver(sender)
+//                .withPayloadType(ApiEnum.PayloadType.RecoverValidatorType)
+//                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+//                .withPayloadBody(new TxRecoverBody())
+//                .build();
+//
+//        TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
+//        assertNull(txSendResponse.getError());
+//
+//        isExists = false;
+//        validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+//        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+//            if (result.getValidatorAccountAddr().equals(sender)) {
+//                isExists = true;
+//                assertEquals(false, result.isFreezing());
+//                Assert.assertEquals(ApiEnum.FreezingType.NONE, result.getFreezingReason());
+//                assertEquals(0, result.getFreezingBlockNo());
+//                assertEquals(0, result.getDisconnectCnt());
+//            }
+//        }
+//        assertEquals(true, isExists);
+//
+//        simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+//        Assert.assertEquals(false, simpleValidatorResponse.getResult().isFreezing());
+//        Assert.assertEquals(ApiEnum.FreezingType.NONE, simpleValidatorResponse.getResult().getFreezingReason());
+//        Assert.assertEquals(0, simpleValidatorResponse.getResult().getFreezingBlockNo());
+    }
+
+
     @Test
     public void testorder() throws Exception {
         CheckValidationCommonFields();
@@ -1901,9 +2035,11 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         GRProposalTxGRProposal();
         GRVoteTxGRVoteDisagree();
         GRVoteTxGRVoteAgree();
+        RecoverValidatorTxCheckValidation();
+        RecoverValidatorTxRecoverValidator();
     }
 
-    @Test
+    //    @Test
     @Order(order = 200)
     public void test() {
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
@@ -1914,13 +2050,5 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
         System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
-    }
-
-    @Test
-    public void ttt() {
-        System.out.println(xCube.getProgressGovernance(null, targetChainId).send().getError());
-//        for (XCube cc : xCubeList) {
-//            System.out.println(JsonUtil.generateClassToJson(cc.getProgressGovernance(null, targetChainId).send().getGR()));
-//        }
     }
 }

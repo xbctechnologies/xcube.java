@@ -5,17 +5,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigInteger;
-import java.util.Map;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ValidatorBondResponse extends Response<Map<String, ValidatorBondResponse.Bond>> {
-    public Map<String, Bond> getBonding() {
+public class ValidatorBondResponse extends Response<List<ValidatorBondResponse.Bond>> {
+    public List<ValidatorBondResponse.Bond> getBonding() {
         return getResult();
     }
 
     @Data
     public static class Bond {
+        private String validatorAccountAddr;
         private BigInteger bondingBalance;
     }
 }

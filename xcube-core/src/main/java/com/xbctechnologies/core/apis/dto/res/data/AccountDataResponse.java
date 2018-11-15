@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -24,13 +23,14 @@ public class AccountDataResponse extends Response<AccountDataResponse.Result> {
         private long txNo;
         private BigInteger balance;
         private BigInteger bondedBalance;
-        private Map<String, Bond> bondingMap;
+        private List<Bond> bondingMap;
         private List<UnBond> unBondingList;
 
         @Data
         @AllArgsConstructor
         @NoArgsConstructor
         public static class Bond {
+            private String validatorAccountAddr;
             private BigInteger bondingBalance;
         }
 
