@@ -2444,9 +2444,6 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     @Test
     @Order(order = 33)
     public void SendNewAccount() throws Exception {
-        AccountBalanceResponse senderBalanceResponse = xCube.getBalance(null, targetChainId, sender, XTOType).send();
-        System.out.println(JsonUtil.generateClassToJson(senderBalanceResponse.getBalance()));
-
         AccountBalanceResponse receiverBalanceResponse = xCube.getBalance(null, targetChainId, NEW_ACCOUNT, XTOType).send();
         assertNotNull(receiverBalanceResponse.getError());
         assertEquals(200, receiverBalanceResponse.getError().getCode());
@@ -2457,13 +2454,10 @@ public class TestTxAPIAboutMultiNode extends TestParent {
                 .withPayloadType(ApiEnum.PayloadType.CommonType)
                 .withFee(CurrencyUtil.generateXTO(CoinType, 2))
                 .withAmount(CurrencyUtil.generateXTO(CoinType, 10))
-                .withPayloadBody(new TxBondingBody())
+                .withPayloadBody(new TxCommonBody())
                 .build();
         TxSendResponse sendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(sendResponse.getError());
-
-        senderBalanceResponse = xCube.getBalance(null, targetChainId, sender, XTOType).send();
-        System.out.println(JsonUtil.generateClassToJson(senderBalanceResponse.getBalance()));
 
         receiverBalanceResponse = xCube.getBalance(null, targetChainId, NEW_ACCOUNT, XTOType).send();
         assertNull(receiverBalanceResponse.getError());
@@ -2475,11 +2469,14 @@ public class TestTxAPIAboutMultiNode extends TestParent {
                 .withPayloadType(ApiEnum.PayloadType.CommonType)
                 .withFee(CurrencyUtil.generateXTO(CoinType, 1))
                 .withAmount(CurrencyUtil.generateXTO(CoinType, 2))
-                .withPayloadBody(new TxBondingBody())
+                .withPayloadBody(new TxCommonBody())
                 .build();
         SignUtil.signTx(txRequest, privKeyPassword, newAccountPrivKeyJson);
         sendResponse = xCube.sendTransaction(txRequest).send();
         assertNull(sendResponse.getError());
+
+        receiverBalanceResponse = xCube.getBalance(null, targetChainId, NEW_ACCOUNT, XTOType).send();
+        assertEquals(CurrencyUtil.generateXTO(CoinType, 7), receiverBalanceResponse.getBalance().getTotalBalance());
     }
 
     @Test
