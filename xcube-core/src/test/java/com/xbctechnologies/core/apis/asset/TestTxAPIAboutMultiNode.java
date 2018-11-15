@@ -1959,52 +1959,459 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         boolean isExists = false;
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
-        System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
-//        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
-//            if (result.getValidatorAccountAddr().equals(sender)) {
-//                isExists = true;
-//                assertEquals(true, result.isFreezing());
-//                Assert.assertEquals(ApiEnum.FreezingType.Disconnected, result.getFreezingReason());
-//                assertEquals(48, result.getFreezingBlockNo());
-//                assertEquals(3, result.getDisconnectCnt());
-//            }
-//        }
-//        assertEquals(true, isExists);
-//
-//        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
-//        Assert.assertEquals(true, simpleValidatorResponse.getResult().isFreezing());
-//        Assert.assertEquals(ApiEnum.FreezingType.Disconnected, simpleValidatorResponse.getResult().getFreezingReason());
-//        Assert.assertEquals(48, simpleValidatorResponse.getResult().getFreezingBlockNo());
-//
-//        txRequest = makeDefaultBuilder()
-//                .withSender(sender)
-//                .withReceiver(sender)
-//                .withPayloadType(ApiEnum.PayloadType.RecoverValidatorType)
-//                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
-//                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
-//                .withPayloadBody(new TxRecoverBody())
-//                .build();
-//
-//        TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
-//        assertNull(txSendResponse.getError());
-//
-//        isExists = false;
-//        validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
-//        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
-//            if (result.getValidatorAccountAddr().equals(sender)) {
-//                isExists = true;
-//                assertEquals(false, result.isFreezing());
-//                Assert.assertEquals(ApiEnum.FreezingType.NONE, result.getFreezingReason());
-//                assertEquals(0, result.getFreezingBlockNo());
-//                assertEquals(0, result.getDisconnectCnt());
-//            }
-//        }
-//        assertEquals(true, isExists);
-//
-//        simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
-//        Assert.assertEquals(false, simpleValidatorResponse.getResult().isFreezing());
-//        Assert.assertEquals(ApiEnum.FreezingType.NONE, simpleValidatorResponse.getResult().getFreezingReason());
-//        Assert.assertEquals(0, simpleValidatorResponse.getResult().getFreezingBlockNo());
+        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            if (result.getValidatorAccountAddr().equals(sender)) {
+                isExists = true;
+                assertEquals(true, result.isFreezing());
+                Assert.assertEquals(ApiEnum.FreezingType.Disconnected, result.getFreezingReason());
+                assertEquals(44, result.getFreezingBlockNo());
+                assertEquals(3, result.getDisconnectCnt());
+            }
+        }
+        assertEquals(true, isExists);
+
+        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+        Assert.assertEquals(true, simpleValidatorResponse.getResult().isFreezing());
+        Assert.assertEquals(ApiEnum.FreezingType.Disconnected, simpleValidatorResponse.getResult().getFreezingReason());
+        Assert.assertEquals(44, simpleValidatorResponse.getResult().getFreezingBlockNo());
+
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.RecoverValidatorType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(new TxRecoverBody())
+                .build();
+
+        TxSendResponse txSendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(txSendResponse.getError());
+
+        isExists = false;
+        validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            if (result.getValidatorAccountAddr().equals(sender)) {
+                isExists = true;
+                assertEquals(false, result.isFreezing());
+                Assert.assertEquals(ApiEnum.FreezingType.NONE, result.getFreezingReason());
+                assertEquals(0, result.getFreezingBlockNo());
+                assertEquals(0, result.getDisconnectCnt());
+            }
+        }
+        assertEquals(true, isExists);
+
+        simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+        Assert.assertEquals(false, simpleValidatorResponse.getResult().isFreezing());
+        Assert.assertEquals(ApiEnum.FreezingType.NONE, simpleValidatorResponse.getResult().getFreezingReason());
+        Assert.assertEquals(0, simpleValidatorResponse.getResult().getFreezingBlockNo());
+    }
+
+    @Test
+    @Order(order = 30)
+    public void UnstakingTxRevokeAllStake() throws Exception {
+        //UnbondingTx - Validator Set 제거
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.UnbondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        TxSendResponse sendResponse = xCube.unbonding(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        boolean isExists = false;
+        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            if (result.getValidatorAccountAddr().equals(sender)) {
+                isExists = true;
+            }
+        }
+        assertEquals(false, isExists);
+
+        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+        assertNull(simpleValidatorResponse.getResult());
+
+        //Undelegating 테스트를 위해 bonding
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.BondingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 10000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxBondingBody())
+                .build();
+        sendResponse = xCube.bonding(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        isExists = false;
+        validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            if (result.getValidatorAccountAddr().equals(sender)) {
+                isExists = true;
+            }
+        }
+        assertEquals(true, isExists);
+
+        simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+        assertNotNull(simpleValidatorResponse.getResult());
+
+        //UndelegatingTx - Validator Set 제거
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(new TxUnbondingBody())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        isExists = false;
+        validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            if (result.getValidatorAccountAddr().equals(sender)) {
+                isExists = true;
+            }
+        }
+        assertEquals(false, isExists);
+
+        simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
+        assertNull(simpleValidatorResponse.getResult());
+    }
+
+    /**
+     * MakeXChainTx - 유효성 체크
+     *
+     * @throws Exception
+     */
+    @Test
+    @Order(order = 32)
+    public void MakeXChainTxCheckValidation() throws Exception {
+        //(Tx로 검증) Tx의 Amount가 0보다 크게 설정한 경우.
+        TxMakeXChainBody.Builder makeXChainBody = TxMakeXChainBody.builder();
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        TxSendResponse sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(307, sendResponse.getError().getCode());
+
+        //(Tx로 검증) Sender와 Receiver가 다르게 설정된 경우.
+        makeXChainBody = TxMakeXChainBody.builder();
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(receiver)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(309, sendResponse.getError().getCode());
+
+        //(Tx로 검증) depth가 1보다 작거나 int32의 최대 값보다 크게 설정된 경우.
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(2147483648l);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //(Tx로 검증) AirdropRate 값이 0보다 작거나 100보다 크게 설정된 경우.
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withAirdropRate(101);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //(Tx로 검증) 자산을 갖지 않도록 설정 했는데 자신의 하위 체인이 자산을 갖을 수 있도록 설정된 경우.
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(false)
+                .withEnableSubAsset(true);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //(Tx로 검증) 자산을 갖지 않도록 설정 했는데 다른 체인과 자산을 교환할 수 있도록 설정된 경우.
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(false)
+                .withNonExchangeChain(false);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //(Tx로 검증) 자산을 갖도록 설정 했는데 AssetHolders, Seeds, Validators가 설정되지 않은 경우.
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(true);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(332, sendResponse.getError().getCode());
+
+        //(Tx로 검증) 자산을 갖지 않도록 설정 했는데 AirdropRate, AssetHolders, Seeds, Validators가 설정된 경우.
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(false)
+                .withNonExchangeChain(true)
+                .withAirdropRate(100);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(1, sendResponse.getError().getCode());
+
+        //(Tx로 검증) Validators의 주소값이 올바르지 않은 경우.
+        List<TxMakeXChainBody.AssetHolder> assetHolders = new ArrayList<>();
+        assetHolders.add(new TxMakeXChainBody.AssetHolder(validator, new BigInteger("100")));
+
+        List<TxMakeXChainBody.Seed> seeds = new ArrayList<>();
+        seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
+
+        List<TxMakeXChainBody.Validator> validators = new ArrayList<>();
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssP"), CurrencyUtil.generateXTO(CoinType, 1).toString(),
+                defaultCompanyName,
+                defaultCompanyDesc,
+                defaultCompanyUrl,
+                defaultCompanyLogoUrl,
+                defaultCompanyLat,
+                defaultCompanyLon));
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(true)
+                .withAssetHolders(assetHolders)
+                .withSeeds(seeds)
+                .withValidators(validators);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(909, sendResponse.getError().getCode());
+
+        //(Tx로 검증) Validators이 중복으로 설정된 경우.
+        assetHolders = new ArrayList<>();
+        assetHolders.add(new TxMakeXChainBody.AssetHolder(validator, new BigInteger("100")));
+
+        seeds = new ArrayList<>();
+        seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
+
+        validators = new ArrayList<>();
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 1).toString(),
+                defaultCompanyName,
+                defaultCompanyDesc,
+                defaultCompanyUrl,
+                defaultCompanyLogoUrl,
+                defaultCompanyLat,
+                defaultCompanyLon));
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 15).toString(),
+                defaultCompanyName,
+                defaultCompanyDesc,
+                defaultCompanyUrl,
+                defaultCompanyLogoUrl,
+                defaultCompanyLat,
+                defaultCompanyLon));
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(true)
+                .withAssetHolders(assetHolders)
+                .withSeeds(seeds)
+                .withValidators(validators);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(104, sendResponse.getError().getCode());
+
+        //(Tx로 검증) Validators의 Power가 0과 같거나 작게 설정된 경우.
+        assetHolders = new ArrayList<>();
+        assetHolders.add(new TxMakeXChainBody.AssetHolder(validator, new BigInteger("100")));
+
+        seeds = new ArrayList<>();
+        seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
+
+        validators = new ArrayList<>();
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, -20).toString(),
+                defaultCompanyName,
+                defaultCompanyDesc,
+                defaultCompanyUrl,
+                defaultCompanyLogoUrl,
+                defaultCompanyLat,
+                defaultCompanyLon));
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(true)
+                .withAssetHolders(assetHolders)
+                .withSeeds(seeds)
+                .withValidators(validators);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(107, sendResponse.getError().getCode());
+
+        //(Tx로 검증) Validators의 Validator의 Power값이 AssetHolders에 설정된 자산보다 큰경우.
+        assetHolders = new ArrayList<>();
+        assetHolders.add(new TxMakeXChainBody.AssetHolder(validator, new BigInteger("100")));
+
+        seeds = new ArrayList<>();
+        seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
+
+        validators = new ArrayList<>();
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 2).toString(),
+                defaultCompanyName,
+                defaultCompanyDesc,
+                defaultCompanyUrl,
+                defaultCompanyLogoUrl,
+                defaultCompanyLat,
+                defaultCompanyLon));
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(true)
+                .withAssetHolders(assetHolders)
+                .withSeeds(seeds)
+                .withValidators(validators);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(106, sendResponse.getError().getCode());
+
+        //(Tx로 검증) Validators에 존재하는데 AssetHolders에 존재하지 않는 경우.
+        assetHolders = new ArrayList<>();
+        assetHolders.add(new TxMakeXChainBody.AssetHolder(validator, CurrencyUtil.generateXTO(CoinType, 500)));
+
+        seeds = new ArrayList<>();
+        seeds.add(new TxMakeXChainBody.Seed("seedId", "192.168.0.1", 7979));
+
+        validators = new ArrayList<>();
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AhWzVf0OyJqfM7668hiK3K1yJg38uycx9wDwMRAnssPfR"), CurrencyUtil.generateXTO(CoinType, 5).toString(),
+                defaultCompanyName,
+                defaultCompanyDesc,
+                defaultCompanyUrl,
+                defaultCompanyLogoUrl,
+                defaultCompanyLat,
+                defaultCompanyLon));
+        validators.add(new TxMakeXChainBody.Validator(new TxMakeXChainBody.Validator.PubKey("xblock/PubKeySecp256k1", "AuNGgU3yl4p00bqvNYbx/3CyX0VomKMM6q6dxc9Q4c1u"), CurrencyUtil.generateXTO(CoinType, 20).toString(),
+                defaultCompanyName,
+                defaultCompanyDesc,
+                defaultCompanyUrl,
+                defaultCompanyLogoUrl,
+                defaultCompanyLat,
+                defaultCompanyLon));
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(1)
+                .withHasAsset(true)
+                .withAssetHolders(assetHolders)
+                .withSeeds(seeds)
+                .withValidators(validators);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(105, sendResponse.getError().getCode());
+
+        //(상위 체인과 비교) Depth값이 상위체인의 Depth와 같거나 큰경우.
+        makeXChainBody = TxMakeXChainBody.builder()
+                .withDepth(4096)
+                .withHasAsset(false)
+                .withNonExchangeChain(true);
+        txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.MakeXChainType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1000))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 0))
+                .withPayloadBody(makeXChainBody.build())
+                .build();
+        sendResponse = xCube.unbonding(txRequest).send();
+        assertNotNull(sendResponse.getError());
+        Assert.assertEquals(312, sendResponse.getError().getCode());
     }
 
 
@@ -2037,6 +2444,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         GRVoteTxGRVoteAgree();
         RecoverValidatorTxCheckValidation();
         RecoverValidatorTxRecoverValidator();
+        UnstakingTxRevokeAllStake();
+        MakeXChainTxCheckValidation();
     }
 
     //    @Test
