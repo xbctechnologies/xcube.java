@@ -441,16 +441,6 @@ public class XCube {
         );
     }
 
-    public Request<?, BoolResponse> removeNewGR(Long reqId, String targetChainId) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "data_removeNewGR",
-                Arrays.asList(targetChainId),
-                BoolResponse.class
-        );
-    }
-
     public Request<?, LongResponse> getRPCSize(Long reqId) {
         return new Request<>(
                 restHttpClient,

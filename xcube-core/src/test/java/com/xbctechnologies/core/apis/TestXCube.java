@@ -45,4 +45,14 @@ public class TestXCube {
                 BoolResponse.class
         );
     }
+
+    public Request<?, BoolResponse> removeNewGR(Long reqId, String targetChainId) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "data_removeNewGR",
+                Arrays.asList(targetChainId),
+                BoolResponse.class
+        );
+    }
 }

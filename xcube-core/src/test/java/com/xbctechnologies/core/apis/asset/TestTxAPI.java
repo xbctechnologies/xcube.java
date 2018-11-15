@@ -1832,7 +1832,7 @@ public class TestTxAPI extends TestParent {
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
         //다음 GR을 테스트하기 위해 삭제
-        BoolResponse boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        BoolResponse boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
     }
 
@@ -1873,7 +1873,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        BoolResponse boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        BoolResponse boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //ValidatorRewardRate, DelegatorRewardRate
@@ -1903,7 +1903,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MinCommonTxFee
@@ -1935,7 +1935,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MinBondingTxFee
@@ -1967,7 +1967,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MinGRProposalTxFee
@@ -1999,7 +1999,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MinGRVoteTxFee
@@ -2031,7 +2031,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MinXTxFee
@@ -2063,7 +2063,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MaxBlockNumsForVoting
@@ -2095,7 +2095,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MinBlockNumsToGRProposal
@@ -2127,7 +2127,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MinBlockNumsUtilReflection
@@ -2159,7 +2159,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MaxBlockNumsUtilReflection
@@ -2191,7 +2191,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //BlockNumsFreezingValidator
@@ -2223,7 +2223,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //BlockNumsUtilUnbonded
@@ -2255,7 +2255,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //MaxDelegatableValidatorNums
@@ -2287,7 +2287,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //ValidatorNums
@@ -2319,7 +2319,7 @@ public class TestTxAPI extends TestParent {
         assertEquals(expectedGR, actualGR.getGR());
         Assert.assertEquals(validatorListResponse.getResult().get(0).getTotalBondingBalance(), actualGR.getGR().getStake().get(validator));
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
 
         //FirstCompatibleVersion
@@ -2370,7 +2370,7 @@ public class TestTxAPI extends TestParent {
         assertNotNull(txSendResponse.getError());
         Assert.assertEquals(600, txSendResponse.getError().getCode());
 
-        boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
     }
 
@@ -2539,7 +2539,7 @@ public class TestTxAPI extends TestParent {
         Assert.assertEquals(318, sendResponse.getError().getCode());
 
         //다음 GR을 테스트하기 위해 삭제
-        BoolResponse boolResponse = xCube.removeNewGR(null, targetChainId).send();
+        BoolResponse boolResponse = testXCube.removeNewGR(null, targetChainId).send();
         assertNull(boolResponse.getError());
     }
 
