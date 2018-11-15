@@ -19,6 +19,13 @@ buildscript {
     }
 }
 
+task finalize << {
+    def archiveFileName = "${project.jar.baseName}.jar"
+    def archiveFile = new File("${buildDir}/libs/${project.jar.baseName}-${version}.jar")
+    archiveFile.renameTo(new File("${buildDir}/libs/${archiveFileName}"))
+}
+build.finalizedBy(finalize)
+
 dependencies {
     apply plugin: 'org.springframework.boot'
 
