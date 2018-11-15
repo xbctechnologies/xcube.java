@@ -3312,7 +3312,7 @@ public class TestTxAPI extends TestParent {
 
     }
 
-    @Test
+//    @Test
     public void TestAmount() throws Exception {
         BigInteger totalStakingOfValidator = CurrencyUtil.generateXTO(CoinType, 8000000);
         BigInteger totalStakingOfDelegator = new BigInteger("0");

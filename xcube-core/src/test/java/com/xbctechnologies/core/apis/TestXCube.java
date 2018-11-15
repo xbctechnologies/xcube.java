@@ -50,7 +50,7 @@ public class TestXCube {
         return new Request<>(
                 restHttpClient,
                 reqId,
-                "data_removeNewGR",
+                "data_privateRemoveNewGR",
                 Arrays.asList(targetChainId),
                 BoolResponse.class
         );
