@@ -23,7 +23,7 @@ public class AccountDataResponse extends Response<AccountDataResponse.Result> {
         private long txNo;
         private BigInteger balance;
         private BigInteger bondedBalance;
-        private List<Bond> bondingMap;
+        private List<Bond> bondingList;
         private List<UnBond> unBondingList;
 
         @Data

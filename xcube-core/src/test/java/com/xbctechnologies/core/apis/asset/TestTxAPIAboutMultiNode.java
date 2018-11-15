@@ -43,6 +43,33 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
     private List<XCube> xCubeList = new ArrayList<>();
 
+    private static String NEW_ACCOUNT = "0xe6a9ccca61be0a46b41808cade23d5160969d52a";
+    public final String newAccountPrivKeyJson = "{\n" +
+            "  \"result\": {\n" +
+            "    \"address\": \"e6a9ccca61be0a46b41808cade23d5160969d52a\",\n" +
+            "    \"crypto\": {\n" +
+            "      \"cipher\": \"aes-128-ctr\",\n" +
+            "      \"ciphertext\": \"315d2704c9145cacf0f31164103722a4ea5990e9ea909c2c1c4944f27b8a016e\",\n" +
+            "      \"cipherparams\": {\n" +
+            "        \"iv\": \"48d98c80e5886add6f3b14f9d4db5074\"\n" +
+            "      },\n" +
+            "      \"kdf\": \"scrypt\",\n" +
+            "      \"kdfparams\": {\n" +
+            "        \"dklen\": 32,\n" +
+            "        \"n\": 262144,\n" +
+            "        \"p\": 1,\n" +
+            "        \"r\": 8,\n" +
+            "        \"salt\": \"6946502db0de2d4e066592818e9b76d45f9e065e6ea302509ddaf71b0cdc24ad\"\n" +
+            "      },\n" +
+            "      \"c\": 0,\n" +
+            "      \"prf\": \"\",\n" +
+            "      \"mac\": \"293b8d8215e1011f8321406995fc0671aeb90a0b912406e1fa3672ca4a4f6154\"\n" +
+            "    },\n" +
+            "    \"id\": \"7e9d8855-53a8-44e3-aa48-8ac37bd5cb91\",\n" +
+            "    \"version\": 3\n" +
+            "  }\n" +
+            "}";
+
     private TxRequest.Builder makeDefaultBuilder() {
         return TxRequest.builder()
                 .withIsSync(true)
@@ -2064,9 +2091,9 @@ public class TestTxAPIAboutMultiNode extends TestParent {
                 .withPayloadType(ApiEnum.PayloadType.UndelegatingType)
                 .withFee(CurrencyUtil.generateXTO(CoinType, 1))
                 .withAmount(CurrencyUtil.generateXTO(CoinType, 1))
-                .withPayloadBody(new TxUnbondingBody())
+                .withPayloadBody(new TxUndelegatingBody())
                 .build();
-        sendResponse = xCube.unbonding(txRequest).send();
+        sendResponse = xCube.undelegating(txRequest).send();
         assertNull(sendResponse.getError());
 
         isExists = false;
@@ -2414,6 +2441,46 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         Assert.assertEquals(312, sendResponse.getError().getCode());
     }
 
+    @Test
+    @Order(order = 33)
+    public void SendNewAccount() throws Exception {
+        AccountBalanceResponse senderBalanceResponse = xCube.getBalance(null, targetChainId, sender, XTOType).send();
+        System.out.println(JsonUtil.generateClassToJson(senderBalanceResponse.getBalance()));
+
+        AccountBalanceResponse receiverBalanceResponse = xCube.getBalance(null, targetChainId, NEW_ACCOUNT, XTOType).send();
+        assertNotNull(receiverBalanceResponse.getError());
+        assertEquals(200, receiverBalanceResponse.getError().getCode());
+
+        TxRequest txRequest = makeDefaultBuilder()
+                .withSender(sender)
+                .withReceiver(NEW_ACCOUNT)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 2))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 10))
+                .withPayloadBody(new TxBondingBody())
+                .build();
+        TxSendResponse sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(sendResponse.getError());
+
+        senderBalanceResponse = xCube.getBalance(null, targetChainId, sender, XTOType).send();
+        System.out.println(JsonUtil.generateClassToJson(senderBalanceResponse.getBalance()));
+
+        receiverBalanceResponse = xCube.getBalance(null, targetChainId, NEW_ACCOUNT, XTOType).send();
+        assertNull(receiverBalanceResponse.getError());
+        assertEquals(CurrencyUtil.generateXTO(CoinType, 10), receiverBalanceResponse.getBalance().getTotalBalance());
+
+        txRequest = makeDefaultBuilder()
+                .withSender(NEW_ACCOUNT)
+                .withReceiver(sender)
+                .withPayloadType(ApiEnum.PayloadType.CommonType)
+                .withFee(CurrencyUtil.generateXTO(CoinType, 1))
+                .withAmount(CurrencyUtil.generateXTO(CoinType, 2))
+                .withPayloadBody(new TxBondingBody())
+                .build();
+        SignUtil.signTx(txRequest, privKeyPassword, newAccountPrivKeyJson);
+        sendResponse = xCube.sendTransaction(txRequest).send();
+        assertNull(sendResponse.getError());
+    }
 
     @Test
     public void testorder() throws Exception {
@@ -2446,18 +2513,22 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         RecoverValidatorTxRecoverValidator();
         UnstakingTxRevokeAllStake();
         MakeXChainTxCheckValidation();
+        SendNewAccount();
     }
 
-    //    @Test
+    @Test
     @Order(order = 200)
     public void test() {
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
         System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
+//
+//        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
+//        System.out.println(JsonUtil.generateClassToJson(simpleValidatorsResponse.getResult()));
+//
+//        AccountDataResponse accountDataResponse = xCube.getAccount(null, targetChainId, sender).send();
+//        System.out.println(JsonUtil.generateClassToJson(accountDataResponse.getAccount()));
 
-        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
-        System.out.println(JsonUtil.generateClassToJson(simpleValidatorsResponse.getResult()));
-
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, XTOType).send();
+        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
         System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
     }
 }
