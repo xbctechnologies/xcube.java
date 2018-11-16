@@ -2,13 +2,15 @@ package com.xbctechnologies.core.apis.asset;
 
 import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.data.*;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.order.Order;
 import com.xbctechnologies.core.order.OrderedRunner;
@@ -3312,7 +3314,7 @@ public class TestTxAPI extends TestParent {
 
     }
 
-//    @Test
+    @Test
     public void TestAmount() throws Exception {
         BigInteger totalStakingOfValidator = CurrencyUtil.generateXTO(CoinType, 8000000);
         BigInteger totalStakingOfDelegator = new BigInteger("0");
@@ -3449,7 +3451,7 @@ public class TestTxAPI extends TestParent {
 //        System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
 //        SimpleValidatorResponse simpleValidatorResponse = xCube.getSimpleValidator(null, targetChainId, sender).send();
 //        System.out.println(JsonUtil.generateClassToJson(simpleValidatorResponse.getResult()));
-//        AccountDataResponse accountDataResponse = xCube.getAccount(null, targetChainId, validator).send();
+//        AccountResponse accountDataResponse = xCube.getAccount(null, targetChainId, validator).send();
 //        System.out.println(JsonUtil.generateClassToJson(accountDataResponse.getAccount()));
 //        AccountBondInfoResponse bondInfoResponse = xCube.getBonding(null, targetChainId, sender, null).send();
 //        System.out.println(bondInfoResponse.getBonding());

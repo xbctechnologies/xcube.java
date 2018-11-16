@@ -3,7 +3,7 @@ package com.xbctechnologies.core.apis;
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountAddrListResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountExportResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountResponse;
+import com.xbctechnologies.core.apis.dto.res.account.AccountNewResponse;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
 import com.xbctechnologies.core.order.Order;
@@ -56,24 +56,24 @@ public class TestXCubeAccountAPI {
 
         // 1 case Account Create success
         String password = "1111";
-        AccountResponse accountResponse = xCube.newAccount(null, password).send();
-        assertNull(accountResponse.getError());
-        assertNotNull(accountResponse.getAddress());
-        System.out.println(accountResponse.getAddress());
+        AccountNewResponse accountNewResponse = xCube.newAccount(null, password).send();
+        assertNull(accountNewResponse.getError());
+        assertNotNull(accountNewResponse.getAddress());
+        System.out.println(accountNewResponse.getAddress());
         // 2 case Account Create fail ( password is nul check )
         password = null;
-        accountResponse = xCube.newAccount(null, password).send();
-        if (accountResponse.getError() != null) {
-            Assert.assertEquals(accountResponse.getError().getCode(), 707);
+        accountNewResponse = xCube.newAccount(null, password).send();
+        if (accountNewResponse.getError() != null) {
+            Assert.assertEquals(accountNewResponse.getError().getCode(), 707);
         }
-        assertNull(accountResponse.getAddress());
+        assertNull(accountNewResponse.getAddress());
         // 3 case Account Create fail ( password is empty check )
         password = "";
-        accountResponse = xCube.newAccount(null, password).send();
-        if (accountResponse.getError() != null) {
-            Assert.assertEquals(accountResponse.getError().getCode(), 707);
+        accountNewResponse = xCube.newAccount(null, password).send();
+        if (accountNewResponse.getError() != null) {
+            Assert.assertEquals(accountNewResponse.getError().getCode(), 707);
         }
-        assertNull(accountResponse.getAddress());
+        assertNull(accountNewResponse.getAddress());
     }
 
     @Test

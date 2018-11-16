@@ -4,7 +4,7 @@ import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountAddrListResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountResponse;
+import com.xbctechnologies.core.apis.dto.res.account.AccountNewResponse;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.CurrencyUtil;
 import com.xbctechnologies.core.utils.ParamUtil;
@@ -30,7 +30,7 @@ public class AccountController {
 
     @ApiOperation(value = "Create account")
     @RequestMapping(value = "/newAccount", method = {RequestMethod.POST}, produces = "application/json")
-    public AccountResponse newAccount(@RequestParam String passphrase) throws TransactionException {
+    public AccountNewResponse newAccount(@RequestParam String passphrase) throws TransactionException {
         return xcubeClient.xCube.newAccount(null, passphrase).send();
     }
 

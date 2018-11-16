@@ -1,7 +1,7 @@
 package com.xbctechnologies.core.apis;
 
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.LongResponse;
 import com.xbctechnologies.core.apis.dto.res.Response;
@@ -10,7 +10,7 @@ import com.xbctechnologies.core.apis.dto.res.block.BlockResponse;
 import com.xbctechnologies.core.apis.dto.res.block.BlockTxCntResponse;
 import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
 import com.xbctechnologies.core.apis.dto.res.data.TotalAtxResponse;
-import com.xbctechnologies.core.apis.dto.res.data.ValidatorListResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.res.network.NetworkPeersResponse;
 import com.xbctechnologies.core.apis.dto.res.node.XChainInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxReceiptResponse;
@@ -23,8 +23,6 @@ import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.order.Order;
 import com.xbctechnologies.core.order.OrderedRunner;
 import com.xbctechnologies.core.TestParent;
-import com.xbctechnologies.core.apis.dto.res.account.*;
-import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.CurrencyUtil;
 import com.xbctechnologies.core.utils.DateUtil;
@@ -462,9 +460,9 @@ public class TestXCubeTx extends TestParent {
     @Test
     @Order(order = 22)
     public void TestAccountNew() {
-        AccountResponse accountResponse = xCube.newAccount(null, "1111").send();
-        assertNull(accountResponse.getError());
-        assertNotNull(accountResponse.getAddress());
+        AccountNewResponse accountNewResponse = xCube.newAccount(null, "1111").send();
+        assertNull(accountNewResponse.getError());
+        assertNotNull(accountNewResponse.getAddress());
     }
 
     @Test

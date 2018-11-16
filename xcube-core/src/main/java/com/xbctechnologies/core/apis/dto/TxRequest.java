@@ -1,13 +1,11 @@
-package com.xbctechnologies.core.apis.dto.req.tx;
+package com.xbctechnologies.core.apis.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.xbctechnologies.core.apis.dto.xtypes.proto.*;
 import com.xbctechnologies.core.utils.ParamUtil;
-import com.xbctechnologies.core.apis.dto.ApiEnum;
 import com.xbctechnologies.core.apis.dto.xtypes.TxBody;
 import com.xbctechnologies.core.apis.dto.xtypes.TxFileBody;
-import com.xbctechnologies.core.apis.dto.xtypes.proto.*;
 import com.xbctechnologies.core.apis.serializer.BigIntSerializer;
 import com.xbctechnologies.core.apis.serializer.PayloadBodySerializer;
 import com.xbctechnologies.core.exception.TransactionException;

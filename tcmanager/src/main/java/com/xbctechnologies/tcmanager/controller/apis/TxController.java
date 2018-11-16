@@ -1,7 +1,7 @@
 package com.xbctechnologies.tcmanager.controller.apis;
 
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.tx.*;
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.exception.TransactionException;

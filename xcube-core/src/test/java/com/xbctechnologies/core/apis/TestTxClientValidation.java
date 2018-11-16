@@ -2,7 +2,7 @@ package com.xbctechnologies.core.apis;
 
 import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.TxCommonBody;
 import com.xbctechnologies.core.apis.dto.xtypes.TxFileBody;

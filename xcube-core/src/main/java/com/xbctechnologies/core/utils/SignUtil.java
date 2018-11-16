@@ -1,6 +1,6 @@
 package com.xbctechnologies.core.utils;
 
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.account.AccountExportResponse;
 import com.xbctechnologies.xcrypto.api.XbCipherUtil;
 import com.xbctechnologies.xcrypto.api.XbSignUtil;

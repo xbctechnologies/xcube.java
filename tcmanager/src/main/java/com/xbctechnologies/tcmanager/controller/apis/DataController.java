@@ -1,6 +1,11 @@
 package com.xbctechnologies.tcmanager.controller.apis;
 
+import com.xbctechnologies.core.apis.dto.res.account.AccountResponse;
 import com.xbctechnologies.core.apis.dto.res.data.*;
+import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorsResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.ValidatorResponse;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.CurrencyUtil;
 import com.xbctechnologies.core.utils.ParamUtil;
@@ -29,7 +34,7 @@ public class DataController {
 
     @ApiOperation(value = "Get account by account address")
     @RequestMapping(value = "/getAccount", method = {RequestMethod.POST}, produces = "application/json")
-    public AccountDataResponse getAccount(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String accountAddr) throws TransactionException {
+    public AccountResponse getAccount(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String accountAddr) throws TransactionException {
         return xcubeClient.xCube.getAccount(null, targetChainId, accountAddr).send();
     }
 

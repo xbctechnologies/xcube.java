@@ -4,6 +4,8 @@ import com.xbctechnologies.core.apis.TestXCube;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.data.*;
+import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.ValidatorResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.TxGRProposalBody;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;

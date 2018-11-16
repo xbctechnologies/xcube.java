@@ -1,21 +1,17 @@
 package com.xbctechnologies.core.apis;
 
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.LongResponse;
 import com.xbctechnologies.core.apis.dto.res.Response;
-import com.xbctechnologies.core.apis.dto.res.account.AccountAddrListResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountResponse;
+import com.xbctechnologies.core.apis.dto.res.account.*;
 import com.xbctechnologies.core.apis.dto.res.block.BlockResponse;
 import com.xbctechnologies.core.apis.dto.res.block.BlockTxCntResponse;
 import com.xbctechnologies.core.apis.dto.res.data.*;
 import com.xbctechnologies.core.apis.dto.res.network.NetworkPeersResponse;
 import com.xbctechnologies.core.apis.dto.res.node.XChainInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.*;
-import com.xbctechnologies.core.apis.dto.res.validator.ValidatorBondResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.ValidatorSetResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.*;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.Base64Util;
@@ -167,13 +163,13 @@ public class XCube {
     /**
      * Account
      */
-    public Request<?, AccountResponse> newAccount(Long reqId, String password) {
+    public Request<?, AccountNewResponse> newAccount(Long reqId, String password) {
         return new Request<>(
                 restHttpClient,
                 reqId,
                 "account_new",
                 Arrays.asList(password),
-                AccountResponse.class
+                AccountNewResponse.class
         );
     }
 
@@ -239,6 +235,16 @@ public class XCube {
         );
     }
 
+    public Request<?, AccountResponse> getAccount(Long reqId, String targetChainId, String accountAddr) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "account_getAccount",
+                Arrays.asList(targetChainId, accountAddr),
+                AccountResponse.class
+        );
+    }
+
     /**
      * Validator
      */
@@ -272,6 +278,46 @@ public class XCube {
         );
     }
 
+    public Request<?, ValidatorListResponse> getValidatorList(Long reqId, String targetChainId) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "validator_getValidatorList",
+                Arrays.asList(targetChainId),
+                ValidatorListResponse.class
+        );
+    }
+
+    public Request<?, ValidatorResponse> getValidator(Long reqId, String targetChainId, String validatorAddr) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "validator_getValidator",
+                Arrays.asList(targetChainId, validatorAddr),
+                ValidatorResponse.class
+        );
+    }
+
+    public Request<?, SimpleValidatorResponse> getSimpleValidator(Long reqId, String targetChainId, String validatorAddr) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "validator_getSimpleValidator",
+                Arrays.asList(targetChainId, validatorAddr),
+                SimpleValidatorResponse.class
+        );
+    }
+
+    public Request<?, SimpleValidatorsResponse> getSimpleValidators(Long reqId, String targetChainId) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "validator_getSimpleValidators",
+                Arrays.asList(targetChainId),
+                SimpleValidatorsResponse.class
+        );
+    }
+
     /**
      * Network
      */
@@ -294,16 +340,6 @@ public class XCube {
                 NetworkPeersResponse.class
         );
     }
-
-    /*public Request<?, BoolResponse> addPeer(Long reqId, String targetChainId, String[] peers, boolean persistent) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "network_addPeer",
-                Arrays.asList(targetChainId, peers, persistent),
-                BoolResponse.class
-        );
-    }*/
 
     /**
      * Node
@@ -361,66 +397,6 @@ public class XCube {
         );
     }
 
-    public Request<?, AccountDataResponse> getAccount(Long reqId, String targetChainId, String accountAddr) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "data_getAccount",
-                Arrays.asList(targetChainId, accountAddr),
-                AccountDataResponse.class
-        );
-    }
-
-    public Request<?, ValidatorListResponse> getValidatorList(Long reqId, String targetChainId) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "data_getValidatorList",
-                Arrays.asList(targetChainId),
-                ValidatorListResponse.class
-        );
-    }
-
-    public Request<?, ValidatorResponse> getValidator(Long reqId, String targetChainId, String validatorAddr) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "data_getValidator",
-                Arrays.asList(targetChainId, validatorAddr),
-                ValidatorResponse.class
-        );
-    }
-
-    public Request<?, SimpleValidatorResponse> getSimpleValidator(Long reqId, String targetChainId, String validatorAddr) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "data_getSimpleValidator",
-                Arrays.asList(targetChainId, validatorAddr),
-                SimpleValidatorResponse.class
-        );
-    }
-
-    public Request<?, SimpleValidatorsResponse> getSimpleValidators(Long reqId, String targetChainId) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "data_getSimpleValidators",
-                Arrays.asList(targetChainId),
-                SimpleValidatorsResponse.class
-        );
-    }
-
-    public Request<?, TotalAtxResponse> getTotalATX(Long reqId, String targetChainId, CurrencyUtil.CurrencyType currencyType) {
-        return new Request<>(
-                restHttpClient,
-                reqId,
-                "data_getTotalATX",
-                Arrays.asList(targetChainId, currencyType),
-                TotalAtxResponse.class
-        );
-    }
-
     public Request<?, ProgressGovernance> getProgressGovernance(Long reqId, String targetChainId) {
         return new Request<>(
                 restHttpClient,
@@ -448,6 +424,16 @@ public class XCube {
                 "data_getRPCSize",
                 Arrays.asList(),
                 LongResponse.class
+        );
+    }
+
+    public Request<?, TotalAtxResponse> getTotalATX(Long reqId, String targetChainId, CurrencyUtil.CurrencyType currencyType) {
+        return new Request<>(
+                restHttpClient,
+                reqId,
+                "data_privateGetTotalATX",
+                Arrays.asList(targetChainId, currencyType),
+                TotalAtxResponse.class
         );
     }
 }

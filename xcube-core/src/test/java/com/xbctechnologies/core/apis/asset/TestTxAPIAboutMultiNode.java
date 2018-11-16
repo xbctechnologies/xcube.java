@@ -3,12 +3,15 @@ package com.xbctechnologies.core.apis.asset;
 import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.data.*;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorsResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
@@ -2522,7 +2525,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 //        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
 //        System.out.println(JsonUtil.generateClassToJson(simpleValidatorsResponse.getResult()));
 //
-//        AccountDataResponse accountDataResponse = xCube.getAccount(null, targetChainId, sender).send();
+//        AccountResponse accountDataResponse = xCube.getAccount(null, targetChainId, sender).send();
 //        System.out.println(JsonUtil.generateClassToJson(accountDataResponse.getAccount()));
 
         AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();

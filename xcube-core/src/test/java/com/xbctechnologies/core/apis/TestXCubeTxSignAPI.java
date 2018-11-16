@@ -2,7 +2,7 @@ package com.xbctechnologies.core.apis;
 
 import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountExportResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
@@ -12,7 +12,6 @@ import com.xbctechnologies.core.apis.dto.res.tx.TxSignResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.order.Order;
-import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
 import com.xbctechnologies.core.utils.CurrencyUtil;
 import com.xbctechnologies.core.utils.DateUtil;

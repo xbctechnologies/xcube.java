@@ -3,7 +3,7 @@ package com.xbctechnologies.tcmanager.controller.apis;
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.tcmanager.controller.util.IOUtil;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.tx.TxResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
 import com.xbctechnologies.core.exception.TransactionException;

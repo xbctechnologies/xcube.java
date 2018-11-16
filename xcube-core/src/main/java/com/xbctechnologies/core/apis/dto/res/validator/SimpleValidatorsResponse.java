@@ -1,4 +1,4 @@
-package com.xbctechnologies.core.apis.dto.res.data;
+package com.xbctechnologies.core.apis.dto.res.validator;
 
 import com.xbctechnologies.core.apis.dto.res.Response;
 

@@ -2,7 +2,7 @@ package tx;
 
 import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.apis.dto.xtypes.proto.TxProto;
 import org.junit.Test;

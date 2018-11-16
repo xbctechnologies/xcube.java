@@ -2,9 +2,8 @@ package com.xbctechnologies.core.apis.dto.res.tx;
 
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
-import com.xbctechnologies.core.apis.dto.req.tx.TxRequest;
+import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.Response;
-import com.xbctechnologies.core.apis.dto.xtypes.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
