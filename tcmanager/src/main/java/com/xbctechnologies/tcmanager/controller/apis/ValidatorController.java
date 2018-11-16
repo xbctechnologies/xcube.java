@@ -1,9 +1,8 @@
 package com.xbctechnologies.tcmanager.controller.apis;
 
+import com.xbctechnologies.core.apis.dto.res.validator.*;
 import com.xbctechnologies.tcmanager.config.XCubeClient;
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.ValidatorBondResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.ValidatorSetResponse;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.ParamUtil;
 import io.swagger.annotations.Api;
@@ -36,5 +35,29 @@ public class ValidatorController {
     @RequestMapping(value = "/getValidatorSet", method = {RequestMethod.POST}, produces = "application/json")
     public ValidatorSetResponse getValidatorSet(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam long blockNo) throws TransactionException {
         return xcubeClient.xCube.getValidatorSet(null, targetChainId, blockNo).send();
+    }
+
+    @ApiOperation(value = "Get validator list")
+    @RequestMapping(value = "/getValidatorList", method = {RequestMethod.POST}, produces = "application/json")
+    public ValidatorListResponse getValidatorList(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId) throws TransactionException {
+        return xcubeClient.xCube.getValidatorList(null, targetChainId).send();
+    }
+
+    @ApiOperation(value = "Get validator")
+    @RequestMapping(value = "/getValidator", method = {RequestMethod.POST}, produces = "application/json")
+    public ValidatorResponse getValidator(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String validatorAddr) throws TransactionException {
+        return xcubeClient.xCube.getValidator(null, targetChainId, validatorAddr).send();
+    }
+
+    @ApiOperation(value = "Get simple validator by validator address")
+    @RequestMapping(value = "/getSimpleValidator", method = {RequestMethod.POST}, produces = "application/json")
+    public SimpleValidatorResponse getSimpleValidator(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String validatorAddr) throws TransactionException {
+        return xcubeClient.xCube.getSimpleValidator(null, targetChainId, validatorAddr).send();
+    }
+
+    @ApiOperation(value = "Get simple validators")
+    @RequestMapping(value = "/getSimpleValidators", method = {RequestMethod.POST}, produces = "application/json")
+    public SimpleValidatorsResponse getSimpleValidators(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId) throws TransactionException {
+        return xcubeClient.xCube.getSimpleValidators(null, targetChainId).send();
     }
 }

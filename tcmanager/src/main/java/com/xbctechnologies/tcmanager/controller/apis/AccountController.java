@@ -1,10 +1,7 @@
 package com.xbctechnologies.tcmanager.controller.apis;
 
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountAddrListResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
-import com.xbctechnologies.core.apis.dto.res.account.AccountNewResponse;
+import com.xbctechnologies.core.apis.dto.res.account.*;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.CurrencyUtil;
 import com.xbctechnologies.core.utils.ParamUtil;
@@ -92,5 +89,11 @@ public class AccountController {
             @RequestParam(defaultValue = "XTOType") CurrencyUtil.CurrencyType currencyType
     ) throws TransactionException {
         return xcubeClient.xCube.getBonding(null, targetChainId, accountAddr, currencyType).send();
+    }
+
+    @ApiOperation(value = "Get account by account address")
+    @RequestMapping(value = "/getAccount", method = {RequestMethod.POST}, produces = "application/json")
+    public AccountResponse getAccount(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String accountAddr) throws TransactionException {
+        return xcubeClient.xCube.getAccount(null, targetChainId, accountAddr).send();
     }
 }

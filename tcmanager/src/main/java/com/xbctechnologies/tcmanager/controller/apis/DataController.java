@@ -32,36 +32,6 @@ public class DataController {
         return xcubeClient.xCube.getDataAccount(null, targetChainId, dataAccountAddr).send();
     }
 
-    @ApiOperation(value = "Get account by account address")
-    @RequestMapping(value = "/getAccount", method = {RequestMethod.POST}, produces = "application/json")
-    public AccountResponse getAccount(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String accountAddr) throws TransactionException {
-        return xcubeClient.xCube.getAccount(null, targetChainId, accountAddr).send();
-    }
-
-    @ApiOperation(value = "Get validator list")
-    @RequestMapping(value = "/getValidatorList", method = {RequestMethod.POST}, produces = "application/json")
-    public ValidatorListResponse getValidatorList(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId) throws TransactionException {
-        return xcubeClient.xCube.getValidatorList(null, targetChainId).send();
-    }
-
-    @ApiOperation(value = "Get validator")
-    @RequestMapping(value = "/getValidator", method = {RequestMethod.POST}, produces = "application/json")
-    public ValidatorResponse getValidator(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String validatorAddr) throws TransactionException {
-        return xcubeClient.xCube.getValidator(null, targetChainId, validatorAddr).send();
-    }
-
-    @ApiOperation(value = "Get simple validator by validator address")
-    @RequestMapping(value = "/getSimpleValidator", method = {RequestMethod.POST}, produces = "application/json")
-    public SimpleValidatorResponse getSimpleValidator(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, @RequestParam String validatorAddr) throws TransactionException {
-        return xcubeClient.xCube.getSimpleValidator(null, targetChainId, validatorAddr).send();
-    }
-
-    @ApiOperation(value = "Get simple validators")
-    @RequestMapping(value = "/getSimpleValidators", method = {RequestMethod.POST}, produces = "application/json")
-    public SimpleValidatorsResponse getSimpleValidators(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId) throws TransactionException {
-        return xcubeClient.xCube.getSimpleValidators(null, targetChainId).send();
-    }
-
     @ApiOperation(value = "Get total atx")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "currencyType", defaultValue = "CoinType", allowableValues = "XTOType,KXTOType,MXTOType,GXTOType,MICROCoinType,MILLICoinType,CoinType", paramType = "query", required = true),
