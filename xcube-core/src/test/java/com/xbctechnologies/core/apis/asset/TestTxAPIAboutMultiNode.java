@@ -2769,6 +2769,74 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     }
 
     @Test
+    public void TestAmount() throws Exception {
+        ExpectedRewardResult expectedRewardResult = new ExpectedRewardResult();
+        expectedRewardResult.setTotalBalance(getInitBalance());
+        BigInteger changedRewardXtoPerCoin = null;
+
+        CheckValidationCommonFields();
+        CommonTxCheckValidation();
+        CommonTx(); //3번째 블록 (1번 = genesis block, 2번 = proof block)
+        CommonTxOverTxSize();    //4번째 블록 (3block 보상)
+        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(1, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(2, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(3, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 3));
+
+        CommonTxSameSenderAndReceiver();
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(4, CurrencyUtil.generateXTO(CoinType, 3)), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 2));
+
+        FileTxCheckValidation();
+        FileTxCheckRegisterValidation();
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(5, CurrencyUtil.generateXTO(CoinType, 2)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(6, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(7, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(8, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        FileTxCheckOrigin();
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(9, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(10, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 0));
+
+        FileTxOverriding();
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(11, CurrencyUtil.generateXTO(CoinType, 0)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(12, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(13, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(14, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(15, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+//        BondingTxCheckValidation();
+//        BondingTxBonding();
+//        UnbondingTxCheckValidation();
+//        UnbondingTxUnbonding();
+//        UnbondingTxCheckValidationOfLockBalance();
+//        UnbondingTxUseLockingBalance();
+//        DelegatingTxCheckValidation();
+//        DelegatingTxDelegating();
+//        DelegatingTxDelegatingToSelf();
+//        UndelegatingTxCheckValidation();
+//        UndelegatingTxUndelegating();
+//        UndelegatingTxUndelegatingOfValidator();
+//        GRProposalTxCheckValidation();
+//        GRProposalTxGRProposal();
+//        GRVoteTxGRVoteDisagree();
+//        GRVoteTxGRVoteAgree();
+//        RecoverValidatorTxCheckValidation();
+//        RecoverValidatorTxRecoverValidator();
+//        UnstakingTxRevokeAllStake();
+//        MakeXChainTxCheckValidation();
+//        SendNewAccount();
+//
+//        Thread.sleep(5000);
+//
+//        CompareNodeData();
+    }
+
+    @Test
     public void testorder() throws Exception {
         CheckValidationCommonFields();
         CommonTxCheckValidation();
