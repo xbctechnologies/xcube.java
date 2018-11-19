@@ -287,7 +287,7 @@ public class TestParent {
         private BigInteger totalDiffReward = new BigInteger("0");
     }
 
-    public ExpectedReward makeExpectedRewardAboutMultiValidator(long blockNo, BigInteger originFee) {
+    public ExpectedReward makeExpectedRewardAboutMultiValidator(long blockNo, BigInteger originFee, BigInteger subStakingOfValidator, BigInteger subStakingOfDelegator) {
         ExpectedReward expectedReward = new ExpectedReward();
         expectedReward.setBlockNo(blockNo);
         expectedReward.totalStakingOfValidator = new BigInteger("0");
@@ -297,7 +297,7 @@ public class TestParent {
         for (ValidatorListResponse.Result result : validatorListResponse.getValidatorList()) {
             boolean isInclusionReward = false;
             for (ValidatorListResponse.Result.Reward reward : result.getRewardBlocks()) {
-                if (blockNo < reward.getStartBlockNo() || (blockNo >= reward.getStartBlockNo() && blockNo <= reward.getEndBlockNo())) {
+                if (blockNo >= reward.getStartBlockNo() && blockNo <= reward.getEndBlockNo()) {
                     isInclusionReward = true;
                     break;
                 }
@@ -320,6 +320,13 @@ public class TestParent {
             expectedReward.setTotalStakingForCalculationOfFee(expectedReward.totalStakingOfValidator.add(expectedReward.totalStakingOfDelegator));
         }
         prevTotalStaking = expectedReward.totalStakingOfValidator.add(expectedReward.totalStakingOfDelegator);
+
+        if (subStakingOfValidator != null) {
+            expectedReward.setTotalStakingOfValidator(expectedReward.getTotalStakingOfValidator().subtract(subStakingOfValidator));
+        }
+        if (subStakingOfDelegator != null) {
+            expectedReward.setTotalStakingOfDelegator(expectedReward.getTotalStakingOfDelegator().subtract(subStakingOfDelegator));
+        }
 
         return expectedReward;
     }

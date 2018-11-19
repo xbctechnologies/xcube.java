@@ -640,7 +640,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertNotNull(checkOriginal.getError());
 
         //Wait for proof block creation
-        Thread.sleep(5000);
+        Thread.sleep(8000);
 
         //원본파일 확인, 위에서 저장한 파일과 같은 파일 (일치여부 확인)
         dataAccountAddr = dataResponse.getResult().getDataAccountAddr();
@@ -2778,39 +2778,42 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         CommonTxCheckValidation();
         CommonTx(); //3번째 블록 (1번 = genesis block, 2번 = proof block)
         CommonTxOverTxSize();    //4번째 블록 (3block 보상)
-        ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(1, null), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(2, null), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(3, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(1, null, null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(2, null, null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(3, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 3));
 
         CommonTxSameSenderAndReceiver();
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(4, CurrencyUtil.generateXTO(CoinType, 3)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(4, CurrencyUtil.generateXTO(CoinType, 3), null, null), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 2));
 
         FileTxCheckValidation();
         FileTxCheckRegisterValidation();
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(5, CurrencyUtil.generateXTO(CoinType, 2)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(6, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(7, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(8, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(5, CurrencyUtil.generateXTO(CoinType, 2), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(6, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(7, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(8, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
 
         FileTxCheckOrigin();
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(9, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(10, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(9, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(10, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 0));
 
         FileTxOverriding();
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(11, CurrencyUtil.generateXTO(CoinType, 0)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(12, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(13, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(14, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
-        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(15, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(11, CurrencyUtil.generateXTO(CoinType, 0), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(12, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(13, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(14, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(15, CurrencyUtil.generateXTO(CoinType, 1), null, null), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
 
-//        BondingTxCheckValidation();
-//        BondingTxBonding();
+        BondingTxCheckValidation();
+        BondingTxBonding();
+        BigInteger subStakingOfValidator = CurrencyUtil.generateXTO(CoinType, 1);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(16, CurrencyUtil.generateXTO(CoinType, 1), subStakingOfValidator, null), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 10000));
+
 //        UnbondingTxCheckValidation();
 //        UnbondingTxUnbonding();
 //        UnbondingTxCheckValidationOfLockBalance();
@@ -2831,7 +2834,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 //        MakeXChainTxCheckValidation();
 //        SendNewAccount();
 //
-//        Thread.sleep(5000);
+//        Thread.sleep(8000);
 //
 //        CompareNodeData();
     }
@@ -2869,7 +2872,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         MakeXChainTxCheckValidation();
         SendNewAccount();
 
-        Thread.sleep(5000);
+        Thread.sleep(8000);
 
         CompareNodeData();
     }
