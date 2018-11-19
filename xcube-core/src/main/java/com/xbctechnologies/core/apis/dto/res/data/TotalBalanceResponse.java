@@ -8,7 +8,11 @@ import java.math.BigInteger;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class TotalAtxResponse extends Response<TotalAtxResponse.Result> {
+public class TotalBalanceResponse extends Response<TotalBalanceResponse.Result> {
+    public TotalBalanceResponse.Result getTotalBalance() {
+        return getResult();
+    }
+
     @Data
     public static class Result {
         private int totalAccount;

@@ -427,13 +427,13 @@ public class XCube {
         );
     }
 
-    public Request<?, TotalAtxResponse> getTotalATX(Long reqId, String targetChainId, CurrencyUtil.CurrencyType currencyType) {
+    public Request<?, TotalBalanceResponse> getTotalATX(Long reqId, String targetChainId, CurrencyUtil.CurrencyType currencyType) {
         return new Request<>(
                 restHttpClient,
                 reqId,
                 "data_privateGetTotalATX",
                 Arrays.asList(targetChainId, currencyType),
-                TotalAtxResponse.class
+                TotalBalanceResponse.class
         );
     }
 }

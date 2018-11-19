@@ -9,7 +9,7 @@ import com.xbctechnologies.core.apis.dto.res.account.*;
 import com.xbctechnologies.core.apis.dto.res.block.BlockResponse;
 import com.xbctechnologies.core.apis.dto.res.block.BlockTxCntResponse;
 import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
-import com.xbctechnologies.core.apis.dto.res.data.TotalAtxResponse;
+import com.xbctechnologies.core.apis.dto.res.data.TotalBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.res.network.NetworkPeersResponse;
 import com.xbctechnologies.core.apis.dto.res.node.XChainInfoResponse;
@@ -640,7 +640,7 @@ public class TestXCubeTx extends TestParent {
         System.out.println(JsonUtil.generateClassToJson(validatorListResponse.getResult()));
 //        SimpleValidatorsResponse simpleValidatorsResponse = xCube.getSimpleValidators(null, targetChainId).send();
 //        System.out.println(JsonUtil.generateClassToJson(simpleValidatorsResponse.getResult()));
-        TotalAtxResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-        System.out.println(JsonUtil.generateClassToJson(totalAtxResponse.getResult()));
+        TotalBalanceResponse totalBalanceResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
+        System.out.println(JsonUtil.generateClassToJson(totalBalanceResponse.getResult()));
     }
 }

@@ -3,7 +3,9 @@ package com.xbctechnologies.core;
 import com.xbctechnologies.core.apis.TestXCube;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
-import com.xbctechnologies.core.apis.dto.res.data.*;
+import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
+import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
+import com.xbctechnologies.core.apis.dto.res.data.TotalBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
 import com.xbctechnologies.core.apis.dto.res.validator.ValidatorResponse;
 import com.xbctechnologies.core.apis.dto.xtypes.TxGRProposalBody;
@@ -319,8 +321,8 @@ public class TestParent {
     }
 
     public void assertEqualTotalBalance(ExpectedRewardResult expectedRewardResult, BigInteger subAmount) {
-        TotalAtxResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
-        assertEquals(expectedRewardResult.getTotalBalance().subtract(subAmount), totalAtxResponse.getResult().getTotalBalance());
+        TotalBalanceResponse totalBalanceResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
+        assertEquals(expectedRewardResult.getTotalBalance().subtract(subAmount), totalBalanceResponse.getResult().getTotalBalance());
     }
 
     public void CheckATXBalance(ExpectedRewardResult expectedRewardResult, BigInteger subAmount) throws Exception {
@@ -352,16 +354,16 @@ public class TestParent {
             lockingBalance = lockingBalance.add(actualSender.getBalance().getLockingBalance());
         }
 
-        TotalAtxResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
+        TotalBalanceResponse totalBalanceResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
         BigInteger tempTotalBalance = new BigInteger("0");
-        tempTotalBalance = tempTotalBalance.add(totalAtxResponse.getResult().getAvailableBalance()).add(totalAtxResponse.getResult().getStakingBalance()).add(totalAtxResponse.getResult().getPredictionRewardBalance()).add(totalAtxResponse.getResult().getLockingBalance());
-        Assert.assertEquals(totalAccount, totalAtxResponse.getResult().getTotalAccount());
-        Assert.assertEquals(totalBalance, totalAtxResponse.getResult().getTotalBalance());
-        Assert.assertEquals(availableBalance, totalAtxResponse.getResult().getAvailableBalance());
-        Assert.assertEquals(stakingBalance, totalAtxResponse.getResult().getStakingBalance());
-        Assert.assertEquals(predictionRewardBalance, totalAtxResponse.getResult().getPredictionRewardBalance());
-        Assert.assertEquals(lockingBalance, totalAtxResponse.getResult().getLockingBalance());
-        Assert.assertEquals(tempTotalBalance, totalAtxResponse.getResult().getTotalBalance());
+        tempTotalBalance = tempTotalBalance.add(totalBalanceResponse.getResult().getAvailableBalance()).add(totalBalanceResponse.getResult().getStakingBalance()).add(totalBalanceResponse.getResult().getPredictionRewardBalance()).add(totalBalanceResponse.getResult().getLockingBalance());
+        Assert.assertEquals(totalAccount, totalBalanceResponse.getResult().getTotalAccount());
+        Assert.assertEquals(totalBalance, totalBalanceResponse.getResult().getTotalBalance());
+        Assert.assertEquals(availableBalance, totalBalanceResponse.getResult().getAvailableBalance());
+        Assert.assertEquals(stakingBalance, totalBalanceResponse.getResult().getStakingBalance());
+        Assert.assertEquals(predictionRewardBalance, totalBalanceResponse.getResult().getPredictionRewardBalance());
+        Assert.assertEquals(lockingBalance, totalBalanceResponse.getResult().getLockingBalance());
+        Assert.assertEquals(tempTotalBalance, totalBalanceResponse.getResult().getTotalBalance());
 
         //Fee에 대한 보상값을 계산할때 블록당 전체Fee / 총지분량(ATX) 할때 소숫점이 발생하여, 차이값이 생김.
         //subAmount는 실제로 이전 트랜잭션의 Fee 값이지만 이 메소드를 수행하는 시점에는 해당 Fee에 대한 보상이 이루어지지 않았기 대문에 1의 차이가 발생한다. (보상은 현재 블록의 이전블록 까지 이루어짐)
@@ -371,7 +373,7 @@ public class TestParent {
         }
         BigInteger pureActualBalance = expectedRewardResult.getTotalBalance().subtract(rewardByBlock);
 
-        assertEquals(expectedRewardResult.getTotalBalance().subtract(subAmount), totalAtxResponse.getResult().getTotalBalance());
+        assertEquals(expectedRewardResult.getTotalBalance().subtract(subAmount), totalBalanceResponse.getResult().getTotalBalance());
         assertEquals(expectedRewardResult.getTotalDiffReward(), getInitBalance().subtract(pureActualBalance));
 
         System.out.println(String.format("totalBalance:%s\ntotalReward:%s\ninitBalance:%s\npureActualBalance:%s\nbalanceDiff:%s\nlostAmountByFee:%s",
@@ -382,5 +384,28 @@ public class TestParent {
                 CurrencyUtil.generateStringCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, getInitBalance().subtract(pureActualBalance)),
                 CurrencyUtil.generateStringCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, expectedRewardResult.getTotalDiffReward())
         ));
+    }
+
+    public Map<String, BigInteger> generateSortedMapOfBig(Map<String, BigInteger> val) {
+        if (val == null) {
+            return null;
+        }
+        Map<String, BigInteger> mySortedMap = new TreeMap();
+        val.forEach((k, v) -> {
+            mySortedMap.put(k, v);
+        });
+        return mySortedMap;
+    }
+
+    public Map<String, Boolean> generateSortedMapOfBool(Map<String, Boolean> val) {
+        if (val == null) {
+            return null;
+        }
+        Map<String, Boolean> mySortedMap = new TreeMap();
+
+        val.forEach((k, v) -> {
+            mySortedMap.put(k, v);
+        });
+        return mySortedMap;
     }
 }

@@ -6,6 +6,7 @@ import com.xbctechnologies.core.apis.dto.ApiEnum;
 import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.LongResponse;
+import com.xbctechnologies.core.apis.dto.res.Response;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountResponse;
@@ -14,6 +15,8 @@ import com.xbctechnologies.core.apis.dto.res.block.BlockTxCntResponse;
 import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
 import com.xbctechnologies.core.apis.dto.res.data.DataAccountResponse;
 import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
+import com.xbctechnologies.core.apis.dto.res.data.TotalBalanceResponse;
+import com.xbctechnologies.core.apis.dto.res.network.NetworkPeersResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxReceiptResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxResponse;
@@ -50,6 +53,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     private static long startCurrentBlockNo = 26;
     private static long startEndOfVotingBlockNo = startCurrentBlockNo + 2;
     private static long startReflectionBlockNo = startCurrentBlockNo + 3;
+
+    private static String dataAccountAddr;
 
     private List<XCube> xCubeList = new ArrayList<>();
 
@@ -635,9 +640,10 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertNotNull(checkOriginal.getError());
 
         //Wait for proof block creation
-        Thread.sleep(4000);
+        Thread.sleep(5000);
 
         //원본파일 확인, 위에서 저장한 파일과 같은 파일 (일치여부 확인)
+        dataAccountAddr = dataResponse.getResult().getDataAccountAddr();
         checkOriginal = xCube.checkOriginal(null, targetChainId, dataResponse.getResult().getDataAccountAddr(), file).send();
         assertNull(checkOriginal.getError());
         assertNotNull(checkOriginal.getOrigin());
@@ -2672,12 +2678,94 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         }
 
         //Get peer cnt
-        LongResponse basePeerCnt = null;
         for (int i = 0; i < xCubeList.size(); i++) {
-            basePeerCnt = xCubeList.get(i).getPeerCnt(null, targetChainId).send();
-            System.out.println(i + " : " + basePeerCnt.getResult());
+            LongResponse basePeerCnt = xCubeList.get(i).getPeerCnt(null, targetChainId).send();
+            assertTrue(basePeerCnt.getResult() > 0);
         }
 
+        //Get peers
+        for (int i = 0; i < xCubeList.size(); i++) {
+            NetworkPeersResponse basePeers = xCubeList.get(i).getPeers(null, targetChainId).send();
+            assertNotNull(basePeers.getPeers());
+        }
+
+        //Get version
+        Response baseVersion = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseVersion = xCubeList.get(i).getVersion(null).send();
+            } else {
+                Response targetVersion = xCubeList.get(i).getVersion(null).send();
+                assertEquals(baseVersion.getResult(), targetVersion.getResult());
+            }
+        }
+
+        //Get data account
+        DataAccountResponse baseDataAccount = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseDataAccount = xCubeList.get(i).getDataAccount(null, targetChainId, dataAccountAddr).send();
+            } else {
+                DataAccountResponse targetDataAccount = xCubeList.get(i).getDataAccount(null, targetChainId, dataAccountAddr).send();
+                assertEquals(baseDataAccount.getDataAccount(), targetDataAccount.getDataAccount());
+            }
+        }
+
+        //Get progress governance
+        ProgressGovernance baseProgressGovernance = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseProgressGovernance = xCubeList.get(i).getProgressGovernance(null, targetChainId).send();
+                if (baseProgressGovernance.getGR() != null) {
+                    baseProgressGovernance.getGR().setStake(generateSortedMapOfBig(baseProgressGovernance.getGR().getStake()));
+                    baseProgressGovernance.getGR().setVotingResult(generateSortedMapOfBool(baseProgressGovernance.getGR().getVotingResult()));
+                }
+            } else {
+                ProgressGovernance targetProgressGovernance = xCubeList.get(i).getProgressGovernance(null, targetChainId).send();
+                if (targetProgressGovernance.getGR() != null) {
+                    targetProgressGovernance.getGR().setStake(generateSortedMapOfBig(targetProgressGovernance.getGR().getStake()));
+                    targetProgressGovernance.getGR().setVotingResult(generateSortedMapOfBool(targetProgressGovernance.getGR().getVotingResult()));
+                }
+                assertEquals(baseProgressGovernance.getGR(), targetProgressGovernance.getGR());
+            }
+        }
+
+        //Get current governance
+        CurrentGovernance baseCurrentGovernance = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseCurrentGovernance = xCubeList.get(i).getCurrentGovernance(null, targetChainId).send();
+                baseCurrentGovernance.getGR().setEligibleToVoteMap(generateSortedMapOfBig(baseCurrentGovernance.getGR().getEligibleToVoteMap()));
+                baseCurrentGovernance.getGR().setVoteHistory(generateSortedMapOfBool(baseCurrentGovernance.getGR().getVoteHistory()));
+            } else {
+                CurrentGovernance targetCurrentGovernance = xCubeList.get(i).getCurrentGovernance(null, targetChainId).send();
+                targetCurrentGovernance.getGR().setEligibleToVoteMap(generateSortedMapOfBig(targetCurrentGovernance.getGR().getEligibleToVoteMap()));
+                targetCurrentGovernance.getGR().setVoteHistory(generateSortedMapOfBool(targetCurrentGovernance.getGR().getVoteHistory()));
+                assertEquals(baseCurrentGovernance.getGR(), targetCurrentGovernance.getGR());
+            }
+        }
+
+        //Get rpc size
+        LongResponse baseRpcSize = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseRpcSize = xCubeList.get(i).getRPCSize(null).send();
+            } else {
+                LongResponse targetRpcSize = xCubeList.get(i).getRPCSize(null).send();
+                assertEquals(baseRpcSize.getResult(), targetRpcSize.getResult());
+            }
+        }
+
+        //Get total coin
+        TotalBalanceResponse baseTotal = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseTotal = xCubeList.get(i).getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
+            } else {
+                TotalBalanceResponse targetTotal = xCubeList.get(i).getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.XTOType).send();
+                assertEquals(baseTotal.getTotalBalance(), targetTotal.getTotalBalance());
+            }
+        }
     }
 
     @Test

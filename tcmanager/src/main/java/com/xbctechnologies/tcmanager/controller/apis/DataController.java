@@ -1,11 +1,6 @@
 package com.xbctechnologies.tcmanager.controller.apis;
 
-import com.xbctechnologies.core.apis.dto.res.account.AccountResponse;
 import com.xbctechnologies.core.apis.dto.res.data.*;
-import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorsResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.ValidatorResponse;
 import com.xbctechnologies.core.exception.TransactionException;
 import com.xbctechnologies.core.utils.CurrencyUtil;
 import com.xbctechnologies.core.utils.ParamUtil;
@@ -37,7 +32,7 @@ public class DataController {
             @ApiImplicitParam(name = "currencyType", defaultValue = "CoinType", allowableValues = "XTOType,KXTOType,MXTOType,GXTOType,MICROCoinType,MILLICoinType,CoinType", paramType = "query", required = true),
     })
     @RequestMapping(value = "/getTotalATX", method = {RequestMethod.POST}, produces = "application/json")
-    public TotalAtxResponse getTotalATX(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, String currencyType) throws TransactionException {
+    public TotalBalanceResponse getTotalATX(@RequestParam(defaultValue = ParamUtil.TARGET_CHAIN_ID) String targetChainId, String currencyType) throws TransactionException {
         return xcubeClient.xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.valueOf(currencyType)).send();
     }
 

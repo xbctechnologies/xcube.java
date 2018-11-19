@@ -11,6 +11,10 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class DataAccountResponse extends Response<DataAccountResponse.Result> {
+    public DataAccountResponse.Result getDataAccount() {
+        return getResult();
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

@@ -3443,7 +3443,7 @@ public class TestTxAPI extends TestParent {
         MakeXChainTxCheckValidation();
         MakeXChainTxCheckValidationCompareParentChain();
 
-//        TotalAtxResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.CoinType).send();
+//        TotalBalanceResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.CoinType).send();
 //        System.out.println(JsonUtil.generateClassToJson(totalAtxResponse.getResult()));
 //        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, receiver, CurrencyUtil.CurrencyType.CoinType).send();
 //        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
