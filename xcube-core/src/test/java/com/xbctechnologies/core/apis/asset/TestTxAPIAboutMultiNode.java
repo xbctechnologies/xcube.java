@@ -4,14 +4,21 @@ import com.xbctechnologies.core.TestParent;
 import com.xbctechnologies.core.apis.XCube;
 import com.xbctechnologies.core.apis.dto.ApiEnum;
 import com.xbctechnologies.core.apis.dto.TxRequest;
+import com.xbctechnologies.core.apis.dto.res.BoolResponse;
+import com.xbctechnologies.core.apis.dto.res.LongResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
-import com.xbctechnologies.core.apis.dto.res.data.*;
+import com.xbctechnologies.core.apis.dto.res.account.AccountResponse;
+import com.xbctechnologies.core.apis.dto.res.block.BlockResponse;
+import com.xbctechnologies.core.apis.dto.res.block.BlockTxCntResponse;
+import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
+import com.xbctechnologies.core.apis.dto.res.data.DataAccountResponse;
+import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
+import com.xbctechnologies.core.apis.dto.res.tx.TxReceiptResponse;
+import com.xbctechnologies.core.apis.dto.res.tx.TxResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorsResponse;
-import com.xbctechnologies.core.apis.dto.res.validator.ValidatorListResponse;
+import com.xbctechnologies.core.apis.dto.res.validator.*;
 import com.xbctechnologies.core.apis.dto.xtypes.*;
 import com.xbctechnologies.core.component.rest.RestHttpClient;
 import com.xbctechnologies.core.component.rest.RestHttpConfig;
@@ -2483,6 +2490,197 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     }
 
     @Test
+    @Order(order = 34)
+    public void CompareNodeData() throws Exception {
+        //Balance Data
+        String[] accounts = new String[]{
+                "0xd09913fec8f4797b5344eddea930d2558e5d9015",
+                "0x1167d0b1f1194a473691287dd3d886518a70b911",
+                "0x5d74f2b7024c2258e1213cffdd983b068bbfade1",
+                "0xe66cf2bc13cd7e607d4d619befdd6a51dbcd3adc",
+                "0xfefffa046afb0aa030a6633a3976fcefe6791fbf",
+                "0x60bcb2b65d1f086fc34aeb8f00a1f3794eed7771",
+                "0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5",
+                "0xa642f33ec1a951eceded3cf9e51edea1a806105b",
+                "0xaa0efb5946698728720e508a7029e539ecfa399a",
+                "0xf652d4681058865cebfc25d2ed7934fa03005c6b",
+                "0xe6a9ccca61be0a46b41808cade23d5160969d52a"
+        };
+        for (String account : accounts) {
+            AccountBalanceResponse baseBalanceData = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseBalanceData = xCubeList.get(i).getBalance(null, targetChainId, account, CurrencyUtil.CurrencyType.XTOType).send();
+                } else {
+                    AccountBalanceResponse targetBalanceData = xCubeList.get(i).getBalance(null, targetChainId, account, CurrencyUtil.CurrencyType.XTOType).send();
+                    assertEquals(baseBalanceData.getBalance(), targetBalanceData.getBalance());
+                }
+            }
+        }
+
+        //Bonding Data
+        for (String account : accounts) {
+            AccountBondInfoResponse baseBondingData = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseBondingData = xCubeList.get(i).getBonding(null, targetChainId, account, CurrencyUtil.CurrencyType.XTOType).send();
+                } else {
+                    AccountBondInfoResponse targetBondingData = xCubeList.get(i).getBonding(null, targetChainId, account, CurrencyUtil.CurrencyType.XTOType).send();
+                    assertEquals(baseBondingData.getBonding(), targetBondingData.getBonding());
+                }
+            }
+        }
+
+        //Account Data
+        for (String account : accounts) {
+            AccountResponse baseAccountData = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseAccountData = xCubeList.get(i).getAccount(null, targetChainId, account).send();
+                } else {
+                    AccountResponse targetAccountData = xCubeList.get(i).getAccount(null, targetChainId, account).send();
+                    assertEquals(baseAccountData.getAccount(), targetAccountData.getAccount());
+                }
+            }
+        }
+
+        //Block Data
+        BlockResponse baseLatestBlockData = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseLatestBlockData = xCubeList.get(i).getBlockLatestBlock(null, targetChainId).send();
+            } else {
+                BlockResponse targetLatestBlockData = xCubeList.get(i).getBlockLatestBlock(null, targetChainId).send();
+                assertEquals(baseLatestBlockData.getBlock(), targetLatestBlockData.getBlock());
+            }
+        }
+
+        //All block data
+        List<String> txList = new ArrayList<>();
+        for (int blockNo = 1; blockNo <= baseLatestBlockData.getBlock().getBlockNo(); blockNo++) {
+            BlockResponse baseBlockData = null;
+            BlockTxCntResponse baseBlockTxCntData = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseBlockData = xCubeList.get(i).getBlockByNumber(null, targetChainId, blockNo).send();
+                    baseBlockTxCntData = xCubeList.get(i).getBlockTxCount(null, targetChainId, blockNo).send();
+                    if (baseBlockData.getBlock().getTransactions() != null) {
+                        txList.addAll(baseBlockData.getBlock().getTransactions());
+                    }
+                } else {
+                    BlockResponse targetBlockData = xCubeList.get(i).getBlockByNumber(null, targetChainId, blockNo).send();
+                    BlockTxCntResponse targetBlockTxCntData = xCubeList.get(i).getBlockTxCount(null, targetChainId, blockNo).send();
+                    assertEquals(baseBlockData.getBlock(), targetBlockData.getBlock());
+                    assertEquals(baseBlockTxCntData.getTxCnt(), targetBlockTxCntData.getTxCnt());
+                }
+            }
+        }
+
+        //All tx data
+        for (String tx : txList) {
+            TxResponse baseTxData = null;
+            TxReceiptResponse baseTxReceiptData = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseTxData = xCubeList.get(i).getTransaction(null, targetChainId, tx).send();
+                    baseTxReceiptData = xCubeList.get(i).getTransactionReceipt(null, targetChainId, tx).send();
+                } else {
+                    TxResponse targetTxData = xCubeList.get(i).getTransaction(null, targetChainId, tx).send();
+                    TxReceiptResponse targetTxReceiptData = xCubeList.get(i).getTransactionReceipt(null, targetChainId, tx).send();
+                    assertEquals(baseTxData.getTransaction(), targetTxData.getTransaction());
+                    assertEquals(baseTxReceiptData.getTransactionReceipt(), targetTxReceiptData.getTransactionReceipt());
+                }
+            }
+        }
+
+        //Is validator
+        for (String account : accounts) {
+            BoolResponse baseIsValidator = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseIsValidator = xCubeList.get(i).isValidator(null, targetChainId, account).send();
+                } else {
+                    BoolResponse targetIsValidator = xCubeList.get(i).isValidator(null, targetChainId, account).send();
+                    assertEquals(baseIsValidator.isValidator(), targetIsValidator.isValidator());
+                }
+            }
+        }
+
+        //Validator of
+        for (String account : accounts) {
+            ValidatorBondResponse baseValidatorBond = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseValidatorBond = xCubeList.get(i).getValidatorsOf(null, targetChainId, account).send();
+                } else {
+                    ValidatorBondResponse targetValidatorBond = xCubeList.get(i).getValidatorsOf(null, targetChainId, account).send();
+                    assertEquals(baseValidatorBond.getBonding(), targetValidatorBond.getBonding());
+                }
+            }
+        }
+
+        //Validator set
+        for (int blockNo = 1; blockNo <= baseLatestBlockData.getBlock().getBlockNo(); blockNo++) {
+            ValidatorSetResponse baseValidatorSet = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseValidatorSet = xCubeList.get(i).getValidatorSet(null, targetChainId, blockNo).send();
+                } else {
+                    ValidatorSetResponse targetValidatorSet = xCubeList.get(i).getValidatorSet(null, targetChainId, blockNo).send();
+                    assertEquals(baseValidatorSet.getValidatorSet(), targetValidatorSet.getValidatorSet());
+                }
+            }
+        }
+
+        //Validator list
+        ValidatorListResponse baseValidatorList = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseValidatorList = xCubeList.get(i).getValidatorList(null, targetChainId).send();
+            } else {
+                ValidatorListResponse targetValidatorList = xCubeList.get(i).getValidatorList(null, targetChainId).send();
+                assertEquals(baseValidatorList.getValidatorList(), targetValidatorList.getValidatorList());
+            }
+        }
+
+        //SimpleValidator list
+        SimpleValidatorsResponse baseSimpleValidatorList = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            if (i == 0) {
+                baseSimpleValidatorList = xCubeList.get(i).getSimpleValidators(null, targetChainId).send();
+            } else {
+                SimpleValidatorsResponse targetSimpleValidatorList = xCubeList.get(i).getSimpleValidators(null, targetChainId).send();
+                assertEquals(baseSimpleValidatorList.getSimpleValidatorList(), targetSimpleValidatorList.getSimpleValidatorList());
+            }
+        }
+
+        //Get validator & Get simpleValidator
+        for (ValidatorListResponse.Result validator : baseValidatorList.getValidatorList()) {
+            ValidatorResponse baseValidator = null;
+            SimpleValidatorResponse baseSimpleValidator = null;
+            for (int i = 0; i < xCubeList.size(); i++) {
+                if (i == 0) {
+                    baseValidator = xCubeList.get(i).getValidator(null, targetChainId, validator.getValidatorAccountAddr()).send();
+                    baseSimpleValidator = xCubeList.get(i).getSimpleValidator(null, targetChainId, validator.getValidatorAccountAddr()).send();
+                } else {
+                    ValidatorResponse targetValidator = xCubeList.get(i).getValidator(null, targetChainId, validator.getValidatorAccountAddr()).send();
+                    SimpleValidatorResponse targetSimpleValidator = xCubeList.get(i).getSimpleValidator(null, targetChainId, validator.getValidatorAccountAddr()).send();
+                    assertEquals(baseValidator.getValidator(), targetValidator.getValidator());
+                    assertEquals(baseSimpleValidator.getSimpleValidator(), targetSimpleValidator.getSimpleValidator());
+                }
+            }
+        }
+
+        //Get peer cnt
+        LongResponse basePeerCnt = null;
+        for (int i = 0; i < xCubeList.size(); i++) {
+            basePeerCnt = xCubeList.get(i).getPeerCnt(null, targetChainId).send();
+            System.out.println(i + " : " + basePeerCnt.getResult());
+        }
+
+    }
+
+    @Test
     public void testorder() throws Exception {
         CheckValidationCommonFields();
         CommonTxCheckValidation();
@@ -2514,6 +2712,10 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         UnstakingTxRevokeAllStake();
         MakeXChainTxCheckValidation();
         SendNewAccount();
+
+        Thread.sleep(5000);
+
+        CompareNodeData();
     }
 
     @Test

@@ -14,6 +14,10 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ValidatorListResponse extends Response<List<ValidatorListResponse.Result>> {
+    public List<ValidatorListResponse.Result> getValidatorList() {
+        return getResult();
+    }
+
     @Data
     public static class Result {
         private String validatorAccountAddr;

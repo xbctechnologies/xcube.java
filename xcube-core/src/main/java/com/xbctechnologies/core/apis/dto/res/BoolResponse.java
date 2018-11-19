@@ -6,4 +6,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class BoolResponse extends Response<Boolean> {
+    public boolean isValidator() {
+        return getResult();
+    }
 }

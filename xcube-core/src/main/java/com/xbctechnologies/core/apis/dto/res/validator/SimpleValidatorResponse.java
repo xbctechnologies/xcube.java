@@ -10,6 +10,10 @@ import java.math.BigInteger;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class SimpleValidatorResponse extends Response<SimpleValidatorResponse.Result> {
+    public SimpleValidatorResponse.Result getSimpleValidator() {
+        return getResult();
+    }
+
     @Data
     public static class Result {
         private String validatorAccountAddr;
