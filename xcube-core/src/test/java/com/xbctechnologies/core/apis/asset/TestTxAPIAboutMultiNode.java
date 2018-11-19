@@ -2830,14 +2830,38 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(19, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, amountOnUnbondingTxUseLockingBalance);
 
-//        DelegatingTxCheckValidation();
-//        DelegatingTxDelegating();
-//        DelegatingTxDelegatingToSelf();
-//        UndelegatingTxCheckValidation();
-//        UndelegatingTxUndelegating();
-//        UndelegatingTxUndelegatingOfValidator();
-//        GRProposalTxCheckValidation();
-//        GRProposalTxGRProposal();
+        DelegatingTxCheckValidation();
+        DelegatingTxDelegating(); //21번째 블록 (20 block 보상)
+        BigInteger additionalStakingOfDelegator = CurrencyUtil.generateXTO(CoinType, 99);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(20, amountOnUnbondingTxUseLockingBalance, null, additionalStakingOfDelegator, true), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        DelegatingTxDelegatingToSelf();  //22번째 블록 (21 block 보상)
+        additionalStakingOfDelegator = CurrencyUtil.generateXTO(CoinType, 1);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(21, CurrencyUtil.generateXTO(CoinType, 1), null, additionalStakingOfDelegator, true), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        UndelegatingTxCheckValidation();
+        UndelegatingTxUndelegating();  //23번째 블록 (22 block 보상)
+        additionalStakingOfDelegator = CurrencyUtil.generateXTO(CoinType, 9);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(22, CurrencyUtil.generateXTO(CoinType, 1), null, additionalStakingOfDelegator, false), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        UndelegatingTxUndelegatingOfValidator();  //24번째 블록 (23 block 보상)
+        additionalStakingOfDelegator = CurrencyUtil.generateXTO(CoinType, 1);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(23, CurrencyUtil.generateXTO(CoinType, 1), null, additionalStakingOfDelegator, false), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        GRProposalTxCheckValidation();
+        GRProposalTxGRProposal(); //29번째 블록 (24 ~ 28 block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(24, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(25, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(26, CurrencyUtil.generateXTO(CoinType, 100), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(27, CurrencyUtil.generateXTO(CoinType, 0), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(28, CurrencyUtil.generateXTO(CoinType, 0), null, null, true), changedRewardXtoPerCoin);
+        test();
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
 //        GRVoteTxGRVoteDisagree();
 //        GRVoteTxGRVoteAgree();
 //        RecoverValidatorTxCheckValidation();
@@ -2901,7 +2925,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 //        AccountResponse accountDataResponse = xCube.getAccount(null, targetChainId, sender).send();
 //        System.out.println(JsonUtil.generateClassToJson(accountDataResponse.getAccount()));
 
-        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
-        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
+//        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
+//        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
     }
 }

@@ -29,8 +29,6 @@ public class TestParent {
     public XCube xCube;
     public TestXCube testXCube;
 
-    public BigInteger prevTotalStaking;
-
     public final String targetChainId = "1T";
 
     public final String sender = "0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5";
@@ -310,19 +308,13 @@ public class TestParent {
             expectedReward.originFee = new BigInteger(originFee.toString());
         }
 
-        if (prevTotalStaking != null) {
-            expectedReward.setTotalStakingForCalculationOfFee(prevTotalStaking);
-        } else {
-            expectedReward.setTotalStakingForCalculationOfFee(expectedReward.totalStakingOfValidator.add(expectedReward.totalStakingOfDelegator));
-        }
-        prevTotalStaking = expectedReward.totalStakingOfValidator.add(expectedReward.totalStakingOfDelegator);
-
         if (additionalStakingOfValidator != null) {
             expectedReward.setTotalStakingOfValidator(expectedReward.getTotalStakingOfValidator().add(additionalStakingOfValidator.multiply(isSubtraction ? new BigInteger("-1") : new BigInteger("1"))));
         }
         if (additionalStakingOfDelegator != null) {
             expectedReward.setTotalStakingOfDelegator(expectedReward.getTotalStakingOfDelegator().add(additionalStakingOfDelegator.multiply(isSubtraction ? new BigInteger("-1") : new BigInteger("1"))));
         }
+        expectedReward.setTotalStakingForCalculationOfFee(expectedReward.totalStakingOfValidator.add(expectedReward.totalStakingOfDelegator));
 
         return expectedReward;
     }
