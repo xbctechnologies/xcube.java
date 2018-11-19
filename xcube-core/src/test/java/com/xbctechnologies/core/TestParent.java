@@ -287,7 +287,7 @@ public class TestParent {
         private BigInteger totalDiffReward = new BigInteger("0");
     }
 
-    public ExpectedReward makeExpectedRewardAboutMultiValidator(long blockNo, BigInteger originFee, BigInteger subStakingOfValidator, BigInteger subStakingOfDelegator) {
+    public ExpectedReward makeExpectedRewardAboutMultiValidator(long blockNo, BigInteger originFee, BigInteger additionalStakingOfValidator, BigInteger additionalStakingOfDelegator, boolean isSubtraction) {
         ExpectedReward expectedReward = new ExpectedReward();
         expectedReward.setBlockNo(blockNo);
         expectedReward.totalStakingOfValidator = new BigInteger("0");
@@ -295,16 +295,12 @@ public class TestParent {
 
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
         for (ValidatorListResponse.Result result : validatorListResponse.getValidatorList()) {
-            boolean isInclusionReward = false;
             for (ValidatorListResponse.Result.Reward reward : result.getRewardBlocks()) {
                 if (blockNo >= reward.getStartBlockNo() && blockNo <= reward.getEndBlockNo()) {
-                    isInclusionReward = true;
+                    expectedReward.totalStakingOfValidator = expectedReward.totalStakingOfValidator.add(new BigInteger(result.getTotalBondingBalanceOfValidator().toString()));
+                    expectedReward.totalStakingOfDelegator = expectedReward.totalStakingOfDelegator.add(new BigInteger(result.getTotalBondingBalance().subtract(result.getTotalBondingBalanceOfValidator()).toString()));
                     break;
                 }
-            }
-            if (isInclusionReward) {
-                expectedReward.totalStakingOfValidator = expectedReward.totalStakingOfValidator.add(new BigInteger(result.getTotalBondingBalanceOfValidator().toString()));
-                expectedReward.totalStakingOfDelegator = expectedReward.totalStakingOfDelegator.add(new BigInteger(result.getTotalBondingBalance().subtract(result.getTotalBondingBalanceOfValidator()).toString()));
             }
         }
 
@@ -321,11 +317,11 @@ public class TestParent {
         }
         prevTotalStaking = expectedReward.totalStakingOfValidator.add(expectedReward.totalStakingOfDelegator);
 
-        if (subStakingOfValidator != null) {
-            expectedReward.setTotalStakingOfValidator(expectedReward.getTotalStakingOfValidator().subtract(subStakingOfValidator));
+        if (additionalStakingOfValidator != null) {
+            expectedReward.setTotalStakingOfValidator(expectedReward.getTotalStakingOfValidator().add(additionalStakingOfValidator.multiply(isSubtraction ? new BigInteger("-1") : new BigInteger("1"))));
         }
-        if (subStakingOfDelegator != null) {
-            expectedReward.setTotalStakingOfDelegator(expectedReward.getTotalStakingOfDelegator().subtract(subStakingOfDelegator));
+        if (additionalStakingOfDelegator != null) {
+            expectedReward.setTotalStakingOfDelegator(expectedReward.getTotalStakingOfDelegator().add(additionalStakingOfDelegator.multiply(isSubtraction ? new BigInteger("-1") : new BigInteger("1"))));
         }
 
         return expectedReward;
