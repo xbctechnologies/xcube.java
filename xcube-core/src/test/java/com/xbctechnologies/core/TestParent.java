@@ -293,6 +293,9 @@ public class TestParent {
 
         ValidatorListResponse validatorListResponse = xCube.getValidatorList(null, targetChainId).send();
         for (ValidatorListResponse.Result result : validatorListResponse.getValidatorList()) {
+            if (result.getRewardBlocks() == null) {
+                continue;
+            }
             for (ValidatorListResponse.Result.Reward reward : result.getRewardBlocks()) {
                 if (blockNo >= reward.getStartBlockNo() && blockNo <= reward.getEndBlockNo()) {
                     expectedReward.totalStakingOfValidator = expectedReward.totalStakingOfValidator.add(new BigInteger(result.getTotalBondingBalanceOfValidator().toString()));
@@ -364,7 +367,7 @@ public class TestParent {
         assertEquals(expectedRewardResult.getTotalBalance().subtract(subAmount), totalBalanceResponse.getResult().getTotalBalance());
     }
 
-    public void CheckATXBalance(ExpectedRewardResult expectedRewardResult, BigInteger subAmount) throws Exception {
+    public void CheckATXBalance(ExpectedRewardResult expectedRewardResult, BigInteger subAmount, String addedAccount) throws Exception {
         //모든 계정들의 합과 전체 ATX의 합이 같은지를 비교.
         int totalAccount = 10;
         BigInteger totalBalance = new BigInteger("0");
@@ -372,18 +375,21 @@ public class TestParent {
         BigInteger stakingBalance = new BigInteger("0");
         BigInteger predictionRewardBalance = new BigInteger("0");
         BigInteger lockingBalance = new BigInteger("0");
-        String[] accounts = new String[]{
-                "0xd09913fec8f4797b5344eddea930d2558e5d9015",
-                "0x1167d0b1f1194a473691287dd3d886518a70b911",
-                "0x5d74f2b7024c2258e1213cffdd983b068bbfade1",
-                "0xe66cf2bc13cd7e607d4d619befdd6a51dbcd3adc",
-                "0xfefffa046afb0aa030a6633a3976fcefe6791fbf",
-                "0x60bcb2b65d1f086fc34aeb8f00a1f3794eed7771",
-                "0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5",
-                "0xa642f33ec1a951eceded3cf9e51edea1a806105b",
-                "0xaa0efb5946698728720e508a7029e539ecfa399a",
-                "0xf652d4681058865cebfc25d2ed7934fa03005c6b",
-        };
+        List<String> accounts = new ArrayList<>();
+        accounts.add("0xd09913fec8f4797b5344eddea930d2558e5d9015");
+        accounts.add("0x1167d0b1f1194a473691287dd3d886518a70b911");
+        accounts.add("0x5d74f2b7024c2258e1213cffdd983b068bbfade1");
+        accounts.add("0xe66cf2bc13cd7e607d4d619befdd6a51dbcd3adc");
+        accounts.add("0xfefffa046afb0aa030a6633a3976fcefe6791fbf");
+        accounts.add("0x60bcb2b65d1f086fc34aeb8f00a1f3794eed7771");
+        accounts.add("0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5");
+        accounts.add("0xa642f33ec1a951eceded3cf9e51edea1a806105b");
+        accounts.add("0xaa0efb5946698728720e508a7029e539ecfa399a");
+        accounts.add("0xf652d4681058865cebfc25d2ed7934fa03005c6b");
+        if (addedAccount != null) {
+            totalAccount++;
+            accounts.add(addedAccount);
+        }
         for (String account : accounts) {
             AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, account, CurrencyUtil.CurrencyType.XTOType).send();
             totalBalance = totalBalance.add(actualSender.getBalance().getTotalBalance());

@@ -6,7 +6,9 @@ import com.xbctechnologies.core.apis.dto.TxRequest;
 import com.xbctechnologies.core.apis.dto.res.BoolResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBalanceResponse;
 import com.xbctechnologies.core.apis.dto.res.account.AccountBondInfoResponse;
-import com.xbctechnologies.core.apis.dto.res.data.*;
+import com.xbctechnologies.core.apis.dto.res.data.CurrentGovernance;
+import com.xbctechnologies.core.apis.dto.res.data.DataAccountResponse;
+import com.xbctechnologies.core.apis.dto.res.data.ProgressGovernance;
 import com.xbctechnologies.core.apis.dto.res.tx.TxCheckOriginalResponse;
 import com.xbctechnologies.core.apis.dto.res.tx.TxSendResponse;
 import com.xbctechnologies.core.apis.dto.res.validator.SimpleValidatorResponse;
@@ -3439,9 +3441,12 @@ public class TestTxAPI extends TestParent {
         calculateExpectedReward(expectedRewardResult, makeExpectedReward(55, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 10000)), changedRewardXtoPerCoin);
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
 
-        CheckATXBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
         MakeXChainTxCheckValidation();
         MakeXChainTxCheckValidationCompareParentChain();
+
+        Thread.sleep(5000); //Wait create proof block
+        calculateExpectedReward(expectedRewardResult, makeExpectedReward(56, totalStakingOfValidator, totalStakingOfDelegator, CurrencyUtil.generateXTO(CoinType, 1)), changedRewardXtoPerCoin);
+        CheckATXBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 0), null);
 
 //        TotalBalanceResponse totalAtxResponse = xCube.getTotalATX(null, targetChainId, CurrencyUtil.CurrencyType.CoinType).send();
 //        System.out.println(JsonUtil.generateClassToJson(totalAtxResponse.getResult()));

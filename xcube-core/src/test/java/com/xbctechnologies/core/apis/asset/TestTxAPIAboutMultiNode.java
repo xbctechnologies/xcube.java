@@ -55,6 +55,8 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     private static long startReflectionBlockNo = startCurrentBlockNo + 3;
 
     private static String dataAccountAddr;
+    private static int agreeGRCnt;
+    private static int agreeGRTxCnt;
 
     private List<XCube> xCubeList = new ArrayList<>();
 
@@ -1909,8 +1911,10 @@ public class TestTxAPIAboutMultiNode extends TestParent {
             txSendResponse = xCube.sendTransaction(txRequest).send();
             assertNull(txSendResponse.getError());
             txCnt--;
+            agreeGRCnt++;
         }
 
+        agreeGRTxCnt = txCnt;
         //(4) 새로운 블록을 생성하여 최종적으로 가결 확정되어 새로운 GR로 적용되었는지 확인한다.
         for (int i = 0; i < txCnt; i++) {
             txRequest = makeDefaultBuilder()
@@ -2859,20 +2863,61 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(26, CurrencyUtil.generateXTO(CoinType, 100), null, null, true), changedRewardXtoPerCoin);
         calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(27, CurrencyUtil.generateXTO(CoinType, 0), null, null, true), changedRewardXtoPerCoin);
         calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(28, CurrencyUtil.generateXTO(CoinType, 0), null, null, true), changedRewardXtoPerCoin);
-        test();
         assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
 
-//        GRVoteTxGRVoteDisagree();
-//        GRVoteTxGRVoteAgree();
-//        RecoverValidatorTxCheckValidation();
-//        RecoverValidatorTxRecoverValidator();
-//        UnstakingTxRevokeAllStake();
-//        MakeXChainTxCheckValidation();
-//        SendNewAccount();
-//
-//        Thread.sleep(8000);
-//
-//        CompareNodeData();
+        GRVoteTxGRVoteDisagree(); //33번째 블록 (29 ~ 32 block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(29, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(30, CurrencyUtil.generateXTO(CoinType, 100), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(31, CurrencyUtil.generateXTO(CoinType, 0), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(32, CurrencyUtil.generateXTO(CoinType, 0), null, null, true), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        GRVoteTxGRVoteAgree(); //37번째 블록 (33 ~ 36 block 보상)
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(33, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(34, CurrencyUtil.generateXTO(CoinType, 100), null, null, true), changedRewardXtoPerCoin);
+        long lastBlockNo = 34;
+        for (int i = 0; i < agreeGRCnt; i++) {
+            calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 0), null, null, true), changedRewardXtoPerCoin);
+        }
+        for (int i = 0; i < agreeGRTxCnt; i++) {
+            int amount = 1;
+            if (i == 0) {
+                amount = 0;
+            }
+            calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, amount), null, null, true), changedRewardXtoPerCoin);
+        }
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        changedRewardXtoPerCoin = CurrencyUtil.generateXTO(CurrencyUtil.CurrencyType.XTOType, 10);
+        RecoverValidatorTxCheckValidation();
+        RecoverValidatorTxRecoverValidator(); //10000 Coin(1EA), 1 coin(6EA)
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 10000), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        UnstakingTxRevokeAllStake();
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 10000), null, null, true), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        MakeXChainTxCheckValidation();
+        SendNewAccount();
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 2), null, null, true), changedRewardXtoPerCoin);
+        assertEqualTotalBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 1));
+
+        Thread.sleep(8000);
+
+        CompareNodeData();
+
+        calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
+        CheckATXBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 0), NEW_ACCOUNT);
     }
 
     @Test
