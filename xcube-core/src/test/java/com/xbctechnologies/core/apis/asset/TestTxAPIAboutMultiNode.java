@@ -2577,6 +2577,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
                 if (i == 0) {
                     baseBlockData = xCubeList.get(i).getBlockByNumber(null, targetChainId, blockNo).send();
                     baseBlockTxCntData = xCubeList.get(i).getBlockTxCount(null, targetChainId, blockNo).send();
+                    System.out.println(String.format("Validate block - blockNo:%s, txCnt:%s, accumulatedTxCnt:%s", blockNo, baseBlockData.getBlock().getNumTxs(), baseBlockData.getBlock().getTotal_txs()));
                     if (baseBlockData.getBlock().getTransactions() != null) {
                         txList.addAll(baseBlockData.getBlock().getTransactions());
                     }
@@ -2590,7 +2591,9 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         }
 
         //All tx data
+        int cnt = 0;
         for (String tx : txList) {
+            System.out.println(String.format("Validate tx - %s/%s", (++cnt), txList.size()));
             TxResponse baseTxData = null;
             TxReceiptResponse baseTxReceiptData = null;
             for (int i = 0; i < xCubeList.size(); i++) {
