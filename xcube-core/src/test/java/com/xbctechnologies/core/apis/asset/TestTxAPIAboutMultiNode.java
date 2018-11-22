@@ -2503,23 +2503,22 @@ public class TestTxAPIAboutMultiNode extends TestParent {
         assertEquals(CurrencyUtil.generateXTO(CoinType, 7), receiverBalanceResponse.getBalance().getTotalBalance());
     }
 
-    @Test
-    @Order(order = 34)
-    public void CompareNodeData() throws Exception {
+    public void CompareNodeData(String newAccount) throws Exception {
         //Balance Data
-        String[] accounts = new String[]{
-                "0xd09913fec8f4797b5344eddea930d2558e5d9015",
-                "0x1167d0b1f1194a473691287dd3d886518a70b911",
-                "0x5d74f2b7024c2258e1213cffdd983b068bbfade1",
-                "0xe66cf2bc13cd7e607d4d619befdd6a51dbcd3adc",
-                "0xfefffa046afb0aa030a6633a3976fcefe6791fbf",
-                "0x60bcb2b65d1f086fc34aeb8f00a1f3794eed7771",
-                "0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5",
-                "0xa642f33ec1a951eceded3cf9e51edea1a806105b",
-                "0xaa0efb5946698728720e508a7029e539ecfa399a",
-                "0xf652d4681058865cebfc25d2ed7934fa03005c6b",
-                "0xe6a9ccca61be0a46b41808cade23d5160969d52a"
-        };
+        List<String> accounts = new ArrayList<>();
+        accounts.add("0xd09913fec8f4797b5344eddea930d2558e5d9015");
+        accounts.add("0x1167d0b1f1194a473691287dd3d886518a70b911");
+        accounts.add("0x5d74f2b7024c2258e1213cffdd983b068bbfade1");
+        accounts.add("0xe66cf2bc13cd7e607d4d619befdd6a51dbcd3adc");
+        accounts.add("0xfefffa046afb0aa030a6633a3976fcefe6791fbf");
+        accounts.add("0x60bcb2b65d1f086fc34aeb8f00a1f3794eed7771");
+        accounts.add("0x96a76d177a4b361d2ebec4ca3dfdf8fd330a80c5");
+        accounts.add("0xa642f33ec1a951eceded3cf9e51edea1a806105b");
+        accounts.add("0xaa0efb5946698728720e508a7029e539ecfa399a");
+        accounts.add("0xf652d4681058865cebfc25d2ed7934fa03005c6b");
+        if (newAccount != null) {
+            accounts.add(newAccount);
+        }
         for (String account : accounts) {
             AccountBalanceResponse baseBalanceData = null;
             for (int i = 0; i < xCubeList.size(); i++) {
@@ -2914,7 +2913,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         Thread.sleep(8000);
 
-        CompareNodeData();
+        CompareNodeData(NEW_ACCOUNT);
 
         calculateExpectedReward(expectedRewardResult, makeExpectedRewardAboutMultiValidator(++lastBlockNo, CurrencyUtil.generateXTO(CoinType, 1), null, null, true), changedRewardXtoPerCoin);
         CheckATXBalance(expectedRewardResult, CurrencyUtil.generateXTO(CoinType, 0), NEW_ACCOUNT);
@@ -2955,7 +2954,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
         Thread.sleep(8000);
 
-        CompareNodeData();
+        CompareNodeData(NEW_ACCOUNT);
     }
 
     @Test
@@ -2972,5 +2971,21 @@ public class TestTxAPIAboutMultiNode extends TestParent {
 
 //        AccountBalanceResponse actualSender = xCube.getBalance(null, targetChainId, sender, XTOType).send();
 //        System.out.println(JsonUtil.generateClassToJson(actualSender.getBalance()));
+    }
+
+    @Test
+    @Order(order = 300)
+    public void testnet() throws Exception {
+        String[] hosts = new String[]{"52.78.40.119:7979", "13.125.47.48:7979", "13.124.186.168:7979", "13.125.233.138:7979"};
+        for (String host : hosts) {
+            xCubeList.add(new XCube(new RestHttpClient(
+                    RestHttpConfig.builder()
+                            .withXNodeUrl(String.format("http://%s", host))
+                            .withMaxConnection(100)
+                            .withDefaultTimeout(60000)
+                            .build()
+            )));
+        }
+        CompareNodeData(null);
     }
 }
