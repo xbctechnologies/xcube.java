@@ -2976,6 +2976,7 @@ public class TestTxAPIAboutMultiNode extends TestParent {
     @Test
     @Order(order = 300)
     public void testnet() throws Exception {
+        xCubeList = new ArrayList<>();
         String[] hosts = new String[]{"52.78.40.119:7979", "13.125.47.48:7979", "13.124.186.168:7979", "13.125.233.138:7979"};
         for (String host : hosts) {
             xCubeList.add(new XCube(new RestHttpClient(
