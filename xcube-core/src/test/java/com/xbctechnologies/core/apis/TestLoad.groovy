@@ -1,29 +1,25 @@
 package com.xbctechnologies.core.apis
 
-import static net.grinder.script.Grinder.grinder
-import static org.junit.Assert.*
-import static org.hamcrest.Matchers.*
-import net.grinder.plugin.http.HTTPRequest
-import net.grinder.plugin.http.HTTPPluginControl
-import net.grinder.script.GTest
-import net.grinder.script.Grinder
-import net.grinder.scriptengine.groovy.junit.GrinderRunner
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
-// import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
-import org.junit.runner.RunWith
-
-import java.util.Date
-import java.util.List
-import java.util.ArrayList
-
 import HTTPClient.Cookie
 import HTTPClient.CookieModule
 import HTTPClient.HTTPResponse
 import HTTPClient.NVPair
+import net.grinder.plugin.http.HTTPPluginControl
+import net.grinder.plugin.http.HTTPRequest
+import net.grinder.script.GTest
+import net.grinder.scriptengine.groovy.junit.GrinderRunner
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import static net.grinder.script.Grinder.grinder
+import static org.hamcrest.Matchers.is
+
+// import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
+
+import static org.junit.Assert.assertThat
 
 // import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
 
@@ -82,8 +78,9 @@ class TestLoad {
         def holderSize = HOLDERS.size()
         def hostSize = HOSTS.size()
         def r = new Random()
+        def isSync = "true"
 
-        def data = "{\"jsonrpc\":null,\"method\":\"tx_sendTransaction\",\"id\":1,\"params\":[{\"isSync\":false,\"targetChainId\":\"1T\",\"sender\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"receiver\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"fee\":\"1000000000000000000\",\"amount\":\"10000000000000000000\",\"time\":\"0\",\"v\":0,\"r\":null,\"s\":null,\"payloadType\":1,\"payloadBody\":\"eyJpbnB1dCI6bnVsbH0=\",\"sync\":true}]}"
+        def data = "{\"jsonrpc\":null,\"method\":\"tx_sendTransaction\",\"id\":1,\"params\":[{\"isSync\":${isSync},\"targetChainId\":\"1T\",\"sender\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"receiver\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"fee\":\"1000000000000000000\",\"amount\":\"10000000000000000000\",\"time\":\"0\",\"v\":0,\"r\":null,\"s\":null,\"payloadType\":1,\"payloadBody\":\"eyJpbnB1dCI6bnVsbH0=\",\"sync\":true}]}"
 
         HTTPResponse result = request.POST(HOSTS.get(r.nextInt(hostSize)), data.getBytes(), headers)
         if (result.statusCode == 301 || result.statusCode == 302) {
