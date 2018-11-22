@@ -133,6 +133,7 @@ dependencies {
     def protobuf = '3.6.1'
 
     compile project(':xcrypto')
+    testCompile 'org.ngrinder:ngrinder-groovy:3.4'
 
     compile "org.apache.commons:commons-lang3:3.6"
     compile "commons-io:commons-io:2.6"
