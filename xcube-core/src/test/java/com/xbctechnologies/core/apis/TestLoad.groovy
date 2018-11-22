@@ -1,29 +1,36 @@
 package com.xbctechnologies.core.apis
 
+import static net.grinder.script.Grinder.grinder
+import static org.junit.Assert.*
+import static org.hamcrest.Matchers.*
+import net.grinder.plugin.http.HTTPRequest
+import net.grinder.plugin.http.HTTPPluginControl
+import net.grinder.script.GTest
+import net.grinder.script.Grinder
+import net.grinder.scriptengine.groovy.junit.GrinderRunner
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
+// import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import java.util.Date
+import java.util.List
+import java.util.ArrayList
+
 import HTTPClient.Cookie
 import HTTPClient.CookieModule
 import HTTPClient.HTTPResponse
 import HTTPClient.NVPair
-import net.grinder.plugin.http.HTTPPluginControl
-import net.grinder.plugin.http.HTTPRequest
-import net.grinder.script.GTest
-import net.grinder.scriptengine.groovy.junit.GrinderRunner
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-
-import static net.grinder.script.Grinder.grinder
-import static org.hamcrest.Matchers.is
-import static org.junit.Assert.assertThat
 
 @RunWith(GrinderRunner)
 class TestLoad {
 
     public static GTest test
     public static HTTPRequest request
-    public static NVPair[] headers = [["Content-Type", "application/json"]]
+    public static NVPair[] headers = [new NVPair("Content-Type", "application/json")]
     public static NVPair[] params = []
     public static Cookie[] cookies = []
     public static HOSTS = [
@@ -62,7 +69,7 @@ class TestLoad {
 
         def data = "{\"jsonrpc\":null,\"method\":\"data_getCurrentGovernance\",\"id\":1,\"params\":[\"1T\"]}"
 
-        HTTPResponse result = request.POST(HOSTS.get(r.nextInt(hostSize)), data, headers)
+        HTTPResponse result = request.POST(HOSTS.get(r.nextInt(hostSize)), data.getBytes(), headers)
         if (result.statusCode == 301 || result.statusCode == 302) {
             grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
         } else {
