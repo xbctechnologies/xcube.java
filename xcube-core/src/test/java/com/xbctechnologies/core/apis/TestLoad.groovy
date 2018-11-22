@@ -83,7 +83,7 @@ class TestLoad {
         def hostSize = HOSTS.size()
         def r = new Random()
 
-        def data = "{\"jsonrpc\":null,\"method\":\"tx_sendTransaction\",\"id\":1,\"params\":[{\"isSync\":true,\"targetChainId\":\"1T\",\"sender\":\"" + HOLDERS.get(r.nextInt(holderSize)) + "\",\"receiver\":\"\" + HOLDERS.get(r.nextInt(holderSize)) + \"\",\"fee\":\"1000000000000000000\",\"amount\":\"10000000000000000000\",\"time\":\"0\",\"v\":0,\"r\":null,\"s\":null,\"payloadType\":1,\"payloadBody\":\"eyJpbnB1dCI6bnVsbH0=\",\"sync\":true}]}"
+        def data = "{\"jsonrpc\":null,\"method\":\"tx_sendTransaction\",\"id\":1,\"params\":[{\"isSync\":true,\"targetChainId\":\"1T\",\"sender\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"receiver\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"fee\":\"1000000000000000000\",\"amount\":\"10000000000000000000\",\"time\":\"0\",\"v\":0,\"r\":null,\"s\":null,\"payloadType\":1,\"payloadBody\":\"eyJpbnB1dCI6bnVsbH0=\",\"sync\":true}]}"
 
         HTTPResponse result = request.POST(HOSTS.get(r.nextInt(hostSize)), data.getBytes(), headers)
         if (result.statusCode == 301 || result.statusCode == 302) {
