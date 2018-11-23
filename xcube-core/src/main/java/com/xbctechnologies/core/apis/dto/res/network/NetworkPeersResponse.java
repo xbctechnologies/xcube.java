@@ -18,6 +18,6 @@ public class NetworkPeersResponse extends Response<List<NetworkPeersResponse.Res
         //private String pubKey;
         private String id;
         private String listenAddr;
-        private String[] network;
+        private String network;
     }
 }

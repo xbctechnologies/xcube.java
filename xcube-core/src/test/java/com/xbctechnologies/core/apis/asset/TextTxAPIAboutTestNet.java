@@ -318,7 +318,5 @@ public class TextTxAPIAboutTestNet extends TestParent {
     public void ValidateAllData() throws Exception {
         AccountAddrListResponse accountAddrListResponse = xCubeList.get(0).getListAccount(null).send();
         CompareNodeData(accountAddrListResponse.getAccountList(), null);
-//        for (XCube client : xCubeList) {
-//        }
     }
 }
