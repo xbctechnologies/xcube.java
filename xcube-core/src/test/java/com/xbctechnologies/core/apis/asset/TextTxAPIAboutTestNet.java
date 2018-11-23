@@ -116,14 +116,13 @@ public class TextTxAPIAboutTestNet extends TestParent {
         Set<String> txSet = new HashSet<>();
         List<String> txList = new ArrayList<>();
         for (int blockNo = 1; blockNo <= baseLatestBlockData.getBlock().getBlockNo(); blockNo++) {
-            System.out.println(String.format("AllBlock tx - %s/%s", (++tempCnt), txList.size()));
             BlockResponse baseBlockData = null;
             BlockTxCntResponse baseBlockTxCntData = null;
             for (int i = 0; i < xCubeList.size(); i++) {
                 if (i == 0) {
                     baseBlockData = xCubeList.get(i).getBlockByNumber(null, targetChainId, blockNo).send();
                     baseBlockTxCntData = xCubeList.get(i).getBlockTxCount(null, targetChainId, blockNo).send();
-                    System.out.println(String.format("Validate block - blockNo:%s, txCnt:%s, accumulatedTxCnt:%s", blockNo, baseBlockData.getBlock().getNumTxs(), baseBlockData.getBlock().getTotal_txs()));
+                    System.out.println(String.format("Validate block - blockNo:%s, txCnt:%s, accumulatedTxCnt:%s (%s/%s)", blockNo, baseBlockData.getBlock().getNumTxs(), baseBlockData.getBlock().getTotal_txs(), (++tempCnt), txList.size()));
                     if (baseBlockData.getBlock().getTransactions() != null) {
                         txSet.addAll(baseBlockData.getBlock().getTransactions());
                         txList.addAll(baseBlockData.getBlock().getTransactions());
