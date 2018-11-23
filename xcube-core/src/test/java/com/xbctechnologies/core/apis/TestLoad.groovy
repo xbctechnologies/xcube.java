@@ -29,6 +29,13 @@ class TestLoad {
     public static NVPair[] headers = [new NVPair("Content-Type", "application/json")]
     public static NVPair[] params = []
     public static Cookie[] cookies = []
+    public static FEES = [
+            "1000000000000000000", "2000000000000000000", "3000000000000000000",
+            "4000000000000000000", "5000000000000000000", "6000000000000000000",
+            "7000000000000000000", "8000000000000000000", "9000000000000000000",
+            "10000000000000000000", "11000000000000000000", "12000000000000000000",
+            "13000000000000000000", "14000000000000000000", "15000000000000000000",
+    ]
     public static HOSTS = [
             "http://52.78.40.119:7979",
             "http://13.125.47.48:7979",
@@ -166,10 +173,11 @@ class TestLoad {
     public void test() {
         def holderSize = HOLDERS.size()
         def hostSize = HOSTS.size()
+        def feeSize = FEES.size()
         def r = new Random()
         def isSync = "true"
 
-        def data = "{\"jsonrpc\":null,\"method\":\"tx_sendTransaction\",\"id\":1,\"params\":[{\"isSync\":${isSync},\"targetChainId\":\"1T\",\"sender\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"receiver\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"fee\":\"1000000000000000000\",\"amount\":\"10000000000000000000\",\"time\":\"0\",\"v\":0,\"r\":null,\"s\":null,\"payloadType\":1,\"payloadBody\":\"eyJpbnB1dCI6bnVsbH0=\",\"sync\":true}]}"
+        def data = "{\"jsonrpc\":null,\"method\":\"tx_sendTransaction\",\"id\":1,\"params\":[{\"isSync\":${isSync},\"targetChainId\":\"1T\",\"sender\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"receiver\":\"${HOLDERS.get(r.nextInt(holderSize))}\",\"fee\":\"${FEES.get(r.nextInt(feeSize))}\",\"amount\":\"10000000000000000000\",\"time\":\"0\",\"v\":0,\"r\":null,\"s\":null,\"payloadType\":1,\"payloadBody\":\"eyJpbnB1dCI6bnVsbH0=\",\"sync\":true}]}"
 
         HTTPResponse result = request.POST(HOSTS.get(r.nextInt(hostSize)), data.getBytes(), headers)
         if (result.statusCode == 301 || result.statusCode == 302) {
