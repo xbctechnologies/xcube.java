@@ -189,7 +189,7 @@ public class TextTxAPIAboutTestNet extends TestParent {
         //Reward
         BigInteger initCoinAmount = new BigInteger("0");
         for (int i = 1; i <= 3000; i++) {
-            initCoinAmount = initCoinAmount.add(CurrencyUtil.generateXTO(CoinType, i * 100));
+            initCoinAmount = initCoinAmount.add(CurrencyUtil.generateXTO(CoinType, i * 100000));
         }
 
         ValidatorListResponse validatorListResponse = xCubeList.get(0).getValidatorList(null, targetChainId).send();
