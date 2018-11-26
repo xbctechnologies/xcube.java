@@ -86,7 +86,6 @@ public class VerifyAccountThread implements Runnable {
         //Is validator
         int tempCnt = 0;
         for (String account : accounts) {
-            System.out.println(String.format("IsValidator - %s/%s", ++tempCnt, accounts.size()));
             BoolResponse baseIsValidator = null;
             for (int i = 0; i < xCubeList.size(); i++) {
                 if (i == 0) {
@@ -101,7 +100,6 @@ public class VerifyAccountThread implements Runnable {
         //Validator of
         tempCnt = 0;
         for (String account : accounts) {
-            System.out.println(String.format("ValidatorOf - %s/%s", ++tempCnt, accounts.size()));
             ValidatorBondResponse baseValidatorBond = null;
             for (int i = 0; i < xCubeList.size(); i++) {
                 if (i == 0) {
