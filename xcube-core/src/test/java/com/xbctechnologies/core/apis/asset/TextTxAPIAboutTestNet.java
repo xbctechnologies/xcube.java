@@ -231,7 +231,7 @@ public class TextTxAPIAboutTestNet extends TestParent {
         }
 
         //Tx Data
-        List<List<String>> dividedTx = DivideData.divideListString(txList, 20000);
+        List<List<String>> dividedTx = DivideData.divideListString(txList, 10000);
         synchronized (lockedObj) {
             itemCnt1 = new AtomicInteger();
             completeCnt = new AtomicInteger();
