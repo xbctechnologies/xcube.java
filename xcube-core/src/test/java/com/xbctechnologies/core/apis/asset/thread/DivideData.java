@@ -27,7 +27,7 @@ public class DivideData {
         }
 
         if (remainder > 0) {
-            list.add(data.subList(startIdx, data.size() - 1));
+            list.add(data.subList(startIdx, data.size()));
         }
 
         return list;
