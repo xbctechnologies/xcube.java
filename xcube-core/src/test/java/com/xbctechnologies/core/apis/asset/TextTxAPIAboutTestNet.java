@@ -43,6 +43,14 @@ import static org.junit.Assert.*;
 public class TextTxAPIAboutTestNet extends TestParent {
     private List<XCube> xCubeList = new ArrayList<>();
 
+    private static class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            System.out.println(e);
+            System.exit(1);
+        }
+    }
+
     @Before
     public void init() {
         String[] hosts = new String[]{"52.78.40.119:7979", "13.125.47.48:7979", "13.124.186.168:7979", "13.125.233.138:7979"};
@@ -210,6 +218,7 @@ public class TextTxAPIAboutTestNet extends TestParent {
 
     private void verifyTestNet() throws Exception {
         Object lockedObj = new Object();
+        Thread.setDefaultUncaughtExceptionHandler(new ThreadExceptionHandler());
 
         AccountAddrListResponse accountAddrListResponse = xCubeList.get(0).getListAccount(null).send();
         List<String> accounts = accountAddrListResponse.getAccountList();
@@ -224,7 +233,12 @@ public class TextTxAPIAboutTestNet extends TestParent {
 
         synchronized (lockedObj) {
             for (List<String> data : dividedAccounts) {
-                execService.execute(new VerifyAccountThread(totalItemCnt, itemCnt1, itemCnt2, itemCnt3, dividedAccounts.size(), completeCnt, data, targetChainId, xCubeList, lockedObj));
+                try {
+                    execService.execute(new VerifyAccountThread(totalItemCnt, itemCnt1, itemCnt2, itemCnt3, dividedAccounts.size(), completeCnt, data, targetChainId, xCubeList, lockedObj));
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                    System.exit(1);
+                }
             }
             lockedObj.wait();
         }
