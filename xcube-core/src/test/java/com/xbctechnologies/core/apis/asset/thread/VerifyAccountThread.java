@@ -69,42 +69,24 @@ public class VerifyAccountThread implements Runnable {
             }
         }
 
-        //Account Data
+        //Account Data, Is validator, Validator of
         for (String account : accounts) {
             System.out.println(String.format("Account - %s/%s", itemCnt3.addAndGet(1), totalItemCnt));
             AccountResponse baseAccountData = null;
-            for (int i = 0; i < xCubeList.size(); i++) {
-                if (i == 0) {
-                    baseAccountData = xCubeList.get(i).getAccount(null, targetChainId, account).send();
-                } else {
-                    AccountResponse targetAccountData = xCubeList.get(i).getAccount(null, targetChainId, account).send();
-                    assertEquals(baseAccountData.getAccount(), targetAccountData.getAccount());
-                }
-            }
-        }
-
-        //Is validator
-        int tempCnt = 0;
-        for (String account : accounts) {
             BoolResponse baseIsValidator = null;
-            for (int i = 0; i < xCubeList.size(); i++) {
-                if (i == 0) {
-                    baseIsValidator = xCubeList.get(i).isValidator(null, targetChainId, account).send();
-                } else {
-                    BoolResponse targetIsValidator = xCubeList.get(i).isValidator(null, targetChainId, account).send();
-                    assertEquals(baseIsValidator.isValidator(), targetIsValidator.isValidator());
-                }
-            }
-        }
-
-        //Validator of
-        tempCnt = 0;
-        for (String account : accounts) {
             ValidatorBondResponse baseValidatorBond = null;
             for (int i = 0; i < xCubeList.size(); i++) {
                 if (i == 0) {
+                    baseAccountData = xCubeList.get(i).getAccount(null, targetChainId, account).send();
+                    baseIsValidator = xCubeList.get(i).isValidator(null, targetChainId, account).send();
                     baseValidatorBond = xCubeList.get(i).getValidatorsOf(null, targetChainId, account).send();
                 } else {
+                    AccountResponse targetAccountData = xCubeList.get(i).getAccount(null, targetChainId, account).send();
+                    assertEquals(baseAccountData.getAccount(), targetAccountData.getAccount());
+
+                    BoolResponse targetIsValidator = xCubeList.get(i).isValidator(null, targetChainId, account).send();
+                    assertEquals(baseIsValidator.isValidator(), targetIsValidator.isValidator());
+
                     ValidatorBondResponse targetValidatorBond = xCubeList.get(i).getValidatorsOf(null, targetChainId, account).send();
                     assertEquals(baseValidatorBond.getBonding(), targetValidatorBond.getBonding());
                 }

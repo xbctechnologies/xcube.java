@@ -40,10 +40,11 @@ public class VerifyBlockThread implements Runnable {
 
     @Override
     public void run() {
-        //All block data
+        //All block data, Validator set
         for (long blockNo = longData.start; blockNo <= longData.end; blockNo++) {
             BlockResponse baseBlockData = null;
             BlockTxCntResponse baseBlockTxCntData = null;
+            ValidatorSetResponse baseValidatorSet = null;
             System.out.println(String.format("Block item - %s/%s", itemCnt1.addAndGet(1), totalLongItemCnt));
             for (int i = 0; i < xCubeList.size(); i++) {
                 if (i == 0) {
@@ -53,20 +54,14 @@ public class VerifyBlockThread implements Runnable {
                         txSet.addAll(baseBlockData.getBlock().getTransactions());
                         txList.addAll(baseBlockData.getBlock().getTransactions());
                     }
+
+                    baseValidatorSet = xCubeList.get(i).getValidatorSet(null, targetChainId, blockNo).send();
                 } else {
                     BlockResponse targetBlockData = xCubeList.get(i).getBlockByNumber(null, targetChainId, blockNo).send();
                     BlockTxCntResponse targetBlockTxCntData = xCubeList.get(i).getBlockTxCount(null, targetChainId, blockNo).send();
                     assertEquals(baseBlockData.getBlock(), targetBlockData.getBlock());
                     assertEquals(baseBlockTxCntData.getTxCnt(), targetBlockTxCntData.getTxCnt());
-                }
-            }
 
-            //Validator set
-            ValidatorSetResponse baseValidatorSet = null;
-            for (int i = 0; i < xCubeList.size(); i++) {
-                if (i == 0) {
-                    baseValidatorSet = xCubeList.get(i).getValidatorSet(null, targetChainId, blockNo).send();
-                } else {
                     ValidatorSetResponse targetValidatorSet = xCubeList.get(i).getValidatorSet(null, targetChainId, blockNo).send();
                     assertEquals(baseValidatorSet.getValidatorSet(), targetValidatorSet.getValidatorSet());
                 }
