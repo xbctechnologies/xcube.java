@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class VerifyTxThread implements Runnable {
     private int totalItemCnt;
@@ -41,13 +42,26 @@ public class VerifyTxThread implements Runnable {
                 if (i == 0) {
                     baseTxData = xCubeList.get(i).getTransaction(null, targetChainId, tx).send();
                     baseTxReceiptData = xCubeList.get(i).getTransactionReceipt(null, targetChainId, tx).send();
+                    assertNotNull(baseTxData.getTransaction());
+                    assertNotNull(baseTxReceiptData.getTransactionReceipt());
                 } else {
                     TxResponse targetTxData = xCubeList.get(i).getTransaction(null, targetChainId, tx).send();
                     TxReceiptResponse targetTxReceiptData = xCubeList.get(i).getTransactionReceipt(null, targetChainId, tx).send();
                     assertEquals(baseTxData.getTransaction(), targetTxData.getTransaction());
                     assertEquals(baseTxReceiptData.getTransactionReceipt(), targetTxReceiptData.getTransactionReceipt());
+                    assertNotNull(targetTxData.getTransaction());
+                    assertNotNull(targetTxReceiptData.getTransactionReceipt());
                 }
             }
         }
+
+        int completedCnt = completeCnt.addAndGet(1);
+        if (completedCnt == totalCnt) {
+            System.out.println(String.format("Tx - %s/%s", completedCnt, totalCnt));
+            synchronized (lockedObj) {
+                lockedObj.notify();
+            }
+        }
+        System.out.println(String.format("Tx - %s/%s", completedCnt, totalCnt));
     }
 }

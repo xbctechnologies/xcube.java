@@ -231,11 +231,11 @@ public class TextTxAPIAboutTestNet extends TestParent {
         }
 
         //Tx Data
-        List<List<String>> dividedTx = DivideData.divideListString(txList, 30000);
+        List<List<String>> dividedTx = DivideData.divideListString(txList, 20000);
         synchronized (lockedObj) {
             itemCnt1 = new AtomicInteger();
             completeCnt = new AtomicInteger();
-            for (List<String> data : dividedAccounts) {
+            for (List<String> data : dividedTx) {
                 execService.execute(new VerifyTxThread(txList.size(), itemCnt1, dividedTx.size(), completeCnt, data, targetChainId, xCubeList, lockedObj));
             }
             lockedObj.wait();
