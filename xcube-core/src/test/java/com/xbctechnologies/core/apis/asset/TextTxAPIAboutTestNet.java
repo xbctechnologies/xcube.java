@@ -182,7 +182,7 @@ public class TextTxAPIAboutTestNet extends TestParent {
                 assertEquals(baseTotal.getTotalBalance(), targetTotal.getTotalBalance());
             }
         }
-        System.out.println("Total coin");
+        System.out.println("Total coin" + " : " + baseTotal.getTotalBalance());
     }
 
     private void verifyTestNet() throws Exception {
@@ -244,7 +244,7 @@ public class TextTxAPIAboutTestNet extends TestParent {
 
     @Test
     public void ValidateAllData() throws Exception {
-        CompareNodeData();
         verifyTestNet();
+        CompareNodeData();
     }
 }
