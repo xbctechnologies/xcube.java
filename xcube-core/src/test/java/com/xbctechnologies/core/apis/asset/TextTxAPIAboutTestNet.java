@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.xbctechnologies.core.utils.CurrencyUtil.CurrencyType.CoinType;
 import static org.junit.Assert.*;
 
 @RunWith(OrderedRunner.class)
@@ -183,6 +185,27 @@ public class TextTxAPIAboutTestNet extends TestParent {
             }
         }
         System.out.println("Total coin" + " : " + baseTotal.getTotalBalance());
+
+        //Reward
+        BigInteger initCoinAmount = new BigInteger("0");
+        for (int i = 1; i <= 3000; i++) {
+            initCoinAmount = initCoinAmount.add(CurrencyUtil.generateXTO(CoinType, i * 100));
+        }
+
+        ValidatorListResponse validatorListResponse = xCubeList.get(0).getValidatorList(null, targetChainId).send();
+        BigInteger totalReward = new BigInteger("0");
+        for (ValidatorListResponse.Result result : validatorListResponse.getResult()) {
+            if (result.getRewardBlocks() == null) {
+                continue;
+            }
+            for (ValidatorListResponse.Result.Reward reward : result.getRewardBlocks()) {
+                totalReward = totalReward.add(reward.getRewardPerCoin()
+                        .multiply(new BigInteger(String.valueOf(reward.getEndBlockNo() - reward.getStartBlockNo()) + 1))
+                        .multiply(CurrencyUtil.generateCurrencyUnitToCurrencyUnit(CurrencyUtil.CurrencyType.XTOType, CurrencyUtil.CurrencyType.CoinType, result.getTotalBondingBalance()))
+                );
+            }
+        }
+        assertEquals(initCoinAmount.add(totalReward), baseTotal.getTotalBalance().getTotalBalance());
     }
 
     private void verifyTestNet() throws Exception {
