@@ -46,7 +46,7 @@ public class TextTxAPIAboutTestNet extends TestParent {
     private static class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            System.out.println(e);
+            e.printStackTrace();
             System.exit(1);
         }
     }
