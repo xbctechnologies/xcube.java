@@ -70,7 +70,6 @@ public class VerifyBlockThread implements Runnable {
 
         int completedCnt = completeCnt.addAndGet(1);
         if (completedCnt == totalCnt) {
-            System.out.println(String.format("Block - %s/%s", completedCnt, totalCnt));
             //Check duplication tx
             if (txList.size() != txSet.size()) {
                 fail(String.format("Duplication transaction - list:%s, set:%s", txList.size(), txSet.size()));

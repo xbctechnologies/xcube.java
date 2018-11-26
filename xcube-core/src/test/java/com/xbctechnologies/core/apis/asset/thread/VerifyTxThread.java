@@ -35,7 +35,7 @@ public class VerifyTxThread implements Runnable {
     public void run() {
         //All tx data
         for (String tx : txList) {
-            System.out.println(String.format("Tx - %s/%s", itemCnt1.addAndGet(1), totalItemCnt));
+            System.out.println(String.format("Tx item - %s/%s", itemCnt1.addAndGet(1), totalItemCnt));
             TxResponse baseTxData = null;
             TxReceiptResponse baseTxReceiptData = null;
             for (int i = 0; i < xCubeList.size(); i++) {

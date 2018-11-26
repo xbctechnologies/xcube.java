@@ -95,7 +95,6 @@ public class VerifyAccountThread implements Runnable {
 
         int completedCnt = completeCnt.addAndGet(1);
         if (completedCnt == totalCnt) {
-            System.out.println(String.format("Accounts - %s/%s", completedCnt, totalCnt));
             synchronized (lockedObj) {
                 lockedObj.notify();
             }
