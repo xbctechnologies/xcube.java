@@ -59,7 +59,7 @@ public class TextTxAPIAboutTestNet extends TestParent {
                     RestHttpConfig.builder()
                             .withXNodeUrl(String.format("http://%s", host))
                             .withMaxConnection(100)
-                            .withDefaultTimeout(60000)
+                            .withDefaultTimeout(6000)
                             .build()
             )));
         }
